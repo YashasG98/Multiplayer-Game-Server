@@ -31,15 +31,22 @@
         </div>
     </nav>
 
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{error}}
+    </div>
+    {% endif %}
+
     <div class="wrapper fadeInDown">
 
         <div id="formContent">
             <h4>Register Here</h4>
-            
+
             <form action="/register.html" method="POST">
-                <input type="text" name="registerEmail" id="registerEmail" class="fadeIn second" placeholder="Email to register">
-                <input type="password" name="registerPassword" id="registerPassword" class="fadeIn third" placeholder="Choose a password"
-                    type="password">
+                <input type="text" name="registerEmail" id="registerEmail" class="fadeIn second"
+                    placeholder="Email to register">
+                <input type="password" name="registerPassword" id="registerPassword" class="fadeIn third"
+                    placeholder="Choose a password" type="password">
                 <input type="submit" class="fadeIn fourth" value="Register">
             </form>
         </div>
