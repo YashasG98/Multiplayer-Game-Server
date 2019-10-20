@@ -30,19 +30,28 @@
     </div>
   </nav>
 
+  {% if error %}
+  <div class="alert alert-danger" role="alert">
+      {{error}}
+  </div>
+  {% endif %}
+
   <div class="wrapper fadeInDown">
     <div id="formContent">
       <h4>Login</h4>
-      <input type="text" id="loginEmail" class="fadeIn second" name="login" placeholder="login">
-      <input type="password" id="loginPassword" class="fadeIn third" name="login" placeholder="password">
-      <input type="button" class="fadeIn fourth" value="Log In" onclick="emailLogin()">
+      <form action="/login.html" method="POST">
+        <input type="text" name="loginEmail" id="loginEmail" class="fadeIn second"
+            placeholder="Email">
+        <input type="password" name="loginPassword" id="loginPassword" class="fadeIn third"
+            placeholder="Password" type="password">
+        <input type="submit" class="fadeIn fourth" value="Log In">
+    </form>
       <div id="formFooter">
         <a class="underlineHover" href='passwordResetPage.html'>Forgot Password?</a>
       </div>
 
     </div>
   </div>
-  <script src="app.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
