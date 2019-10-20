@@ -1,11 +1,12 @@
-from flask import Flask,render_template,request,redirect
+from flask import Flask,render_template,request,redirect, url_for
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Game_server'
+# app.config['MYSQL_PASSWORD'] = 'Game_server'
+app.config['MYSQL_PASSWORD'] = 'Shashwath@99'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
@@ -33,6 +34,8 @@ def Register():
     if request.method=='POST':
         email=request.form['registerEmail']
         password=request.form['registerPassword']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
         cur=mysql.connection.cursor()
         _sql = "select * from Login_credentials where email = '{0}'"
         cur.execute(_sql.format(email))
@@ -40,9 +43,10 @@ def Register():
         if(len(data) is 0):
             error = None
             cur.execute("INSERT INTO Login_credentials VALUES(%s,MD5(%s))",(email,password))
+            cur.execute("INSERT INTO Player_profile(email,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
             mysql.connection.commit()
             cur.close()
-            return redirect('/login.html', code=302)
+            return redirect(url_for('Login'))
         else:
             error = 'Email already registered!'
     return render_template('register.html', error = error)
