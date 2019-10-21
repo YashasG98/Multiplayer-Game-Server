@@ -1,20 +1,27 @@
-from flask import Flask,render_template,request,redirect, url_for
+from flask import Flask,render_template,request,redirect, url_for, make_response
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Game_server'
-# app.config['MYSQL_PASSWORD'] = 'Shashwath@99'
+# app.config['MYSQL_PASSWORD'] = 'Game_server'
+app.config['MYSQL_PASSWORD'] = 'Shashwath@99'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
 
+logged_in_users =[]
+
 @app.route('/')
 def Home():
-    return render_template('login.html')
-
+    resp = make_response(render_template('login.html'))
+    email = request.args.get('email')
+    if email in logged_in_users:
+        logged_in_users.remove(email)
+        # cannot delete cookie, but works even without deleting
+        # resp.delete_cookie('email')
+    return resp        
 
 @app.route('/register.html',methods = ['GET','POST'])
 def Register():
@@ -25,6 +32,19 @@ def Register():
         password=request.form['registerPassword']
         firstName = request.form['firstName']
         lastName = request.form['lastName']
+
+        #Valid input check
+        if(len(email) is 0):
+            error = 'Email cannot be empty'
+            return render_template('register.html', error = error)
+        # if (len(password) < 8):
+        #     error = 'Password must be 8 characters long'
+        #     return render_template('register.html', error = error)
+        if (len(firstName) is 0):
+            error = 'First Name cannot be empty'
+            return render_template('register.html', error = error)
+        
+        #Valid input handling
         cur=mysql.connection.cursor()
         _sql = "select * from Login_credentials where email = '{0}'"
         cur.execute(_sql.format(email))
@@ -58,8 +78,11 @@ def Login():
             error = 'Email not found!'
         else:
             if(enc_string==stored):
-                return redirect('/index.html', code=302)
+                logged_in_users.append(email)
+                resp = make_response(redirect(url_for('Index')))
+                resp.set_cookie('email',email)
                 cur.close()
+                return resp
             else:
                 error = 'Invalid password'
 
@@ -67,7 +90,11 @@ def Login():
 
 @app.route('/index.html')
 def Index():
-    return render_template('index.html')
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        return render_template('index.html', email=email)
+    else:
+        return redirect(url_for('Login'))
 
 if __name__ == "__main__":
     app.run(debug=True)
