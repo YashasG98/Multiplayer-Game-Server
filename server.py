@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'Game_server'
-app.config['MYSQL_PASSWORD'] = 'Shashwath@99'
+app.config['MYSQL_PASSWORD'] = 'Game_server'
+# app.config['MYSQL_PASSWORD'] = 'Shashwath@99'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
@@ -37,9 +37,9 @@ def Register():
         if(len(email) is 0):
             error = 'Email cannot be empty'
             return render_template('register.html', error = error)
-        # if (len(password) < 8):
-        #     error = 'Password must be 8 characters long'
-        #     return render_template('register.html', error = error)
+        if (len(password) < 8):
+            error = 'Password must be 8 characters long'
+            return render_template('register.html', error = error)
         if (len(firstName) is 0):
             error = 'First Name cannot be empty'
             return render_template('register.html', error = error)

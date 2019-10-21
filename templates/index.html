@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">    
-        <script>
-            function clearCookie(){
-                unset($_COOKIE['email']);
-                return true;
-            }
-        </script>
-    </head>
 
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">Multiplayer Game Server</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- <button onclick="clearCookie()">HERE</button> -->
-            <div class="collapse navbar-collapse" id="navbarText">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
-                    </li>
-                </ul>
-                <span class="navbar-text">
-                </span>
-            </div>
-        </nav>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+</head>
 
-    </body>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Multiplayer Game Server</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- <button onclick="clearCookie()">HERE</button> -->
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
+                </li>
+            </ul>
+            <span class="navbar-text">
+            </span>
+        </div>
+    </nav>
+    <div style='height: 100vh;' class="jumbotron">
+        <h1 class="display-4">Hello, gamer!</h1>
+        <p class="lead">Welcome to the abode of multiplayer gaming!</p>
+        <hr class="my-4">
+        <p style="margin-bottom: 10vh;">Are you ready to explore a world of infinite possibilities?</p>
+        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-success btn-lg btn-block indexPageButton">Play!</button>
+        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-primary btn-lg btn-block">Profile</button>
+        <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button" class="btn btn-danger btn-lg btn-block">Exit</button>
+    </div>
+</body>
+
 </html>
