@@ -1,7 +1,10 @@
 from flask import Flask,render_template,request,redirect, url_for, make_response
 from flask_mysqldb import MySQL
+from flask_socketio import SocketIO, send, emit
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
@@ -12,6 +15,8 @@ app.config['MYSQL_DB'] = 'Game_server'
 mysql = MySQL(app)
 
 logged_in_users =[]
+
+
 
 @app.route('/')
 def Home():
@@ -93,6 +98,31 @@ def Index():
     email = request.cookies.get('email')
     if email in logged_in_users:
         return render_template('index.html', email=email)
+    else:
+        return redirect(url_for('Login'))
+
+@app.route('/miniGames.html')
+def MiniGames():
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        return render_template('miniGames.html', email=email)
+    else:
+        return redirect(url_for('Login'))
+
+@app.route('/waitingPage.html')
+def Waiting():
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        return render_template('waitingPage.html', email=email)
+    else:
+        return redirect(url_for('Login'))
+
+
+@app.route('/snakegame.html')
+def SAL():
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        return render_template('snakegame.html', email=email)
     else:
         return redirect(url_for('Login'))
 

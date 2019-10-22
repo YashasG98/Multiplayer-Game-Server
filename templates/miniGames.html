@@ -29,13 +29,15 @@
         </div>
     </nav>
     <div style='height: 100vh;' class="jumbotron">
-        <h1 class="display-4">Hello, gamer!</h1>
-        <p class="lead">Welcome to the abode of multiplayer gaming!</p>
+        {%if email%}
+        <h1 class="display-4">Hello, {{email}}!</h1>
+        {%endif%}
+        <p class="lead"></p>
         <hr class="my-4">
-        <p style="margin-bottom: 10vh;">Are you ready to explore a world of infinite possibilities?</p>
-        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-success btn-lg btn-block" onclick="window.location='miniGames.html'">Play!</button>
-        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-primary btn-lg btn-block">Profile</button>
-        <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button" class="btn btn-danger btn-lg btn-block">Exit</button>
+        <p style="margin-bottom: 10vh;">Below are the games available as of now!</p>
+        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-success btn-lg btn-block">Snake 'n Ladders</button>
+        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-primary btn-lg btn-block">Coming Soon</button>
+        <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button" class="btn btn-danger btn-lg btn-block">Back</button>
     </div>
 </body>
 

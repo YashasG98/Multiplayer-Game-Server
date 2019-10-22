@@ -1,0 +1,23 @@
+ #board{
+    margin: 20px;
+    display: flex;
+  
+    /* This centers our sketch horizontally. */
+    justify-content: center;
+  
+    /* This centers our sketch vertically. */
+    align-items: center;
+  }
+
+#rollButton{
+  width: 20%;
+  position: absolute; 
+  right: 40%; 
+  bottom: 10vh;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

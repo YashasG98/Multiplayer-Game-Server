@@ -28,14 +28,14 @@
             </span>
         </div>
     </nav>
+
     <div style='height: 100vh;' class="jumbotron">
-        <h1 class="display-4">Hello, gamer!</h1>
-        <p class="lead">Welcome to the abode of multiplayer gaming!</p>
-        <hr class="my-4">
-        <p style="margin-bottom: 10vh;">Are you ready to explore a world of infinite possibilities?</p>
-        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-success btn-lg btn-block" onclick="window.location='miniGames.html'">Play!</button>
-        <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-primary btn-lg btn-block">Profile</button>
-        <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button" class="btn btn-danger btn-lg btn-block">Exit</button>
+        {%if email%}
+        <div class="container">
+            <h1 style="text-align: center;margin-bottom: 10vh;">Please wait while the game loads!</h1>
+        </div>
+        {%endif%}
+        <div style='margin: auto;' class="loader"></div>
     </div>
 </body>
 
