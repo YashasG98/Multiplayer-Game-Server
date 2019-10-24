@@ -29,15 +29,15 @@ function setup() {
         }
     }
 
-    for (let i = 0; i < 3; i++) {
-        let index = floor(random(cols, tiles.length));
-        tiles[index].snadder = -1 * floor(random(index % cols, index - 1));
-    }
+    // for (let i = 0; i < 3; i++) {
+    //     let index = floor(random(cols, tiles.length));
+    //     tiles[index].snadder = -1 * floor(random(index % cols, index - 1));
+    // }
 
-    for (let i = 0; i < 3; i++) {
-        let index = floor(random(0, tiles.length - cols));
-        tiles[index].snadder = floor(random(cols - (index % cols), tiles.length - index - 1));
-    }
+    // for (let i = 0; i < 3; i++) {
+    //     let index = floor(random(0, tiles.length - cols));
+    //     tiles[index].snadder = floor(random(cols - (index % cols), tiles.length - index - 1));
+    // }
 
     player = new Player();
 }

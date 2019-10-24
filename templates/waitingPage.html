@@ -7,6 +7,9 @@
     <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 </head>
 
@@ -20,9 +23,6 @@
         <!-- <button onclick="clearCookie()">HERE</button> -->
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
-                </li>
             </ul>
             <span class="navbar-text">
             </span>
@@ -32,11 +32,20 @@
     <div style='height: 100vh;' class="jumbotron">
         {%if email%}
         <div class="container">
-            <h1 style="text-align: center;margin-bottom: 10vh;">Please wait while the game loads!</h1>
+            <h1 style="text-align: center;margin-bottom: 10vh;">Please wait while we find a match for you!</h1>
         </div>
         {%endif%}
         <div style='margin: auto;' class="loader"></div>
     </div>
+    <script>
+        var socket_private = io('http://127.0.0.1:5000/private')
+        user_email = document.cookie.split('"')[1]
+        socket_private.emit('waiting_id', user_email);
+        // socket_private.emit('redirectionSocket', user_email);
+        socket_private.on('waitingHere', function (arr) {
+            window.location='snakegame.html';
+        });
+    </script>
 </body>
 
 </html>
