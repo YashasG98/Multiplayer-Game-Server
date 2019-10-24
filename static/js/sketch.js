@@ -38,7 +38,21 @@ function setup() {
     //     let index = floor(random(0, tiles.length - cols));
     //     tiles[index].snadder = floor(random(cols - (index % cols), tiles.length - index - 1));
     // }
-
+    tiles[39].snadder= -37;
+    tiles[26].snadder= -22;
+    tiles[42].snadder= -25;
+    tiles[53].snadder= -23;
+    tiles[65].snadder= -21;
+    tiles[75].snadder= -18;
+    tiles[88].snadder= -36;
+    tiles[98].snadder= -58;
+    tiles[3].snadder= 21;
+    tiles[12].snadder= 33;
+    tiles[41].snadder= 21;
+    tiles[49].snadder= 19;
+    tiles[32].snadder= 16;
+    tiles[61].snadder= 19;
+    tiles[73].snadder= 18;
     player = new Player();
 }
 

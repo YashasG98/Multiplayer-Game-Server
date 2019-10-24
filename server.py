@@ -155,6 +155,7 @@ def SAL():
 
 @socketio.on('waiting_id', namespace='/private')
 def receive_waiting_user(user_email):
+    snakeWaitingSid.clear()
     snakeWaitingSid.append(user_email)
     snakeWaitingSid.append(request.sid)
     print((snakeWaitingSid))
