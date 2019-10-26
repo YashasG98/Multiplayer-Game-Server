@@ -139,8 +139,7 @@ def Waiting():
             mysql.connection.commit()
             snakePartners[email]=snakeWaitingSid[0]
             snakePartners[snakeWaitingSid[0]]=email
-            # leave_waiting('hello')
-            return redirect(url_for('SAL',email='hello'))
+            return redirect(url_for('SAL'))
     else:
         return redirect(url_for('Login'))
 
@@ -149,7 +148,7 @@ def Waiting():
 def SAL():
     email = request.cookies.get('email')
     if email in logged_in_users:
-        return render_template('snakegame.html', email=email)
+        return render_template('snakegame.html', player2=snakePartners[email])
     else:
         return redirect(url_for('Login'))
 

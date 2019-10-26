@@ -9,12 +9,12 @@
     align-items: center;
   }
 
-#rollButton{
+/* #rollButton{
   width: 20%;
   position: absolute; 
   right: 40%; 
   bottom: 10vh;
-}
+} */
 
 .center {
   display: block;
