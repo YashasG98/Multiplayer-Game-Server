@@ -4,10 +4,12 @@ class Player {
         this.spot = -1;
         this.roll = -1;
         this.next = -1;
+        this.state = 1;
     }
 
     rollDie() {
         this.roll = floor(random(1, 7));
+        // this.roll = 1;
         this.next = this.spot + this.roll;
         return this.roll;
     }
@@ -16,11 +18,11 @@ class Player {
         this.spot = this.next;
     }
 
-    showPreview() {
+    showPreview(color) {
         let start = max(0, this.spot);
         let end = min(this.next, tiles.length - 1);
         for (let i = start; i <= end; i++) {
-            tiles[i].highlight();
+            tiles[i].highlight(color);
         }
     }
 
@@ -37,10 +39,10 @@ class Player {
         this.spot += tile.snadder;
     }
 
-    show() {
+    show(color) {
         let current = tiles[this.spot];
         if (!current) return;
-        fill(255);
+        fill(color);
         let center = current.getCenter();
         ellipse(center[0], center[1], 32, 32);
     }

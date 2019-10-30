@@ -43,7 +43,7 @@
         socket_private.emit('waiting_id', user_email);
         // socket_private.emit('redirectionSocket', user_email);
         socket_private.on('waitingHere', function (arr) {
-            window.location='snakegame.html';
+            window.location.href='snakegame.html?player2=yes';
         });
     </script>
 </body>

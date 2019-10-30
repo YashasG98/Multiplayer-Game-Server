@@ -50,8 +50,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalCenterTitle">Ola!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span> -->
                     </button>
                 </div>
                 <div class="modal-body">
@@ -59,7 +59,7 @@
                 </div>
                 <div class="modal-footer">
                     <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Make my first move!</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Let's go!</button>
                 </div>
             </div>
         </div>
@@ -72,14 +72,12 @@
             <div class="row">
                 <div class="col-sm" style="text-align: center;border: 4px solid green;padding: 4%;">
                     <b id='userName'></b>
-                    <!-- <button id='rollButton' onclick="rollOnce()" type="button"
-                            class="btn btn-primary"><b>Roll!</b></button> -->
                 </div>
                 <div class="col-sm">
-                    <button class="btn btn-primary" onclick="rollOnce()"
-                        style="width: 100%;height: 100%;"><b>Roll!</b></button>
+                    <button class="btn btn-primary" onclick="rollOnce()" style="width: 100%;height: 100%;"
+                        id='rollButton'><b>Roll!</b></button>
                 </div>
-                <div class="col-sm" style="text-align: center;border: 4px solid red;padding: 4%;">
+                <div class="col-sm" style="text-align: center;border: 4px solid blue;padding: 4%;">
                     <b id='opponentName'>{{player2}}</b>
                 </div>
             </div>
@@ -88,12 +86,33 @@
     </div>
     </div>
     <script>
+        function getUrlVars() {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                hash[1] = unescape(hash[1]);
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+
+            return vars;
+        }
+        var urlVars = getUrlVars();
+
+        var isPlayer2 = getUrlVars()["player2"];
+
+        if (getUrlVars()["player2"]) {
+            $('#rollButton').attr('disabled', 'disabled');
+        }
+
         $(window).on('load', function () {
             $('#readyModal').modal('show');
         });
         var socket_private = io('http://127.0.0.1:5000/private')
         user_email = document.cookie.split('"')[1];
-        document.getElementById('userName').innerHTML=user_email;
+        document.getElementById('userName').innerHTML = user_email;
         socket_private.emit('user_email', user_email);
 
         socket_private.emit('redirectionSocket', user_email);
@@ -101,7 +120,17 @@
         socket_private.on('send_user_email', function (arr) {
             console.log(arr);
         });
+
+        socket_private.on('getMove', function (arr) {
+            if (isPlayer2)
+                player1.next = player1.spot + arr[0];
+            else
+                player2.next = player2.spot + arr[0];
+            rollOnce();
+            //console.log(arr);
+        });
     </script>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

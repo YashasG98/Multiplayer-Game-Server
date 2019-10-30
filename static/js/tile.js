@@ -24,8 +24,8 @@ class Tile{
         rect(this.x, this.y, this.wh, this.wh);
     }
 
-    highlight() {
-        fill(0, 255, 0, 100);
+    highlight(color) {
+        fill(color);
         noStroke();
         rect(this.x, this.y, this.wh, this.wh);
     }

@@ -169,5 +169,15 @@ def receive_username(user_email):
 def leave_waiting(arr):
     emit('waitingHere',arr,room=snakeWaitingSid[1])
 
+@socketio.on('moveSender', namespace='/private')
+def send_move(arr):
+    print(arr)
+    email = request.cookies.get('email')
+    partner = snakePartners[email]
+    # print(email)
+    # print(partner)
+    # print(snakeUsers[partner])
+    emit('getMove',arr,room=snakeUsers[partner])
+
 if __name__ == "__main__":
     socketio.run(app)
