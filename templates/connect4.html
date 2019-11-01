@@ -1,0 +1,38 @@
+<html>
+
+<head>
+  <title>Connect 4</title>
+  <link rel="stylesheet" href="../static/css/c4styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+    integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+  <script src="../static/js/connect4.js"></script>
+</head>
+
+<body>
+  <div id="connect4"></div>
+  <script type="text/javascript">
+    const user = `{{ email }}`;
+    const playerColor = `{{ color }}`;
+  </script>
+  <div class="player-container">
+    <div style="float:left" id="player1Color"></div>
+    <div style="float:left" id="player1Name">
+      {% if color=="red" %}
+        {{ email }}
+      {% else %}
+        {{ paired_email }}
+      {% endif %}
+    </div>
+    <div style="float:left" id="player2Color"></div>
+    <div style="float:left" id="player2Name">
+      {% if color=="red" %}
+        {{ paired_email }}
+      {% else %}
+        {{ email }}
+      {% endif %}
+    </div>
+  </div>
+</body>
+
+</html>

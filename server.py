@@ -8,18 +8,26 @@ socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Game_server'
-# app.config['MYSQL_PASSWORD'] = 'Shashwath@99'
+# app.config['MYSQL_PASSWORD'] = 'Game_server'
+app.config['MYSQL_PASSWORD'] = 'Game_server1234'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
 
 GAME_ID_SNAKE = 1
+GAME_ID_CONNECT4 = 2
+
 logged_in_users =[]
+
 snakeUsers={}
 snakeWaitingSid=[]
 snakePartners={}
 
+c4users = {}
+c4WaitingSid = []
+c4pairs = {}
+
+# App functionality
 @app.route('/')
 def Home():
     resp = make_response(render_template('login.html'))
@@ -111,35 +119,51 @@ def MiniGames():
 
 @app.route('/waitingPage.html')
 def Waiting():
+
     email = request.cookies.get('email')
+    game_id = int(request.args.get('game_id'))
+    
     if email in logged_in_users:
+    
         cur=mysql.connection.cursor()
         _sql = "select GameID from Players_In_Game where GameID = '{0}'"
-        cur.execute(_sql.format(GAME_ID_SNAKE))
+        cur.execute(_sql.format(game_id))
         stored=cur.fetchall()
+    
         if(len(stored)%2==0):
+    
             _sql = "select No_of_rooms from Mini_Game where GameID = '{0}'"
-            cur.execute(_sql.format(GAME_ID_SNAKE))
+            cur.execute(_sql.format(game_id))
             stored=cur.fetchall()
             curr_rooms = stored[0][0]
             curr_rooms = curr_rooms + 1
             _sql = "update Mini_Game set No_of_rooms = '{0}' where GameID = '{1}'"
-            cur.execute(_sql.format(curr_rooms,GAME_ID_SNAKE))
+            cur.execute(_sql.format(curr_rooms,game_id))
             _sql = "insert into Players_In_Game values('{0}','{1}','{2}')"
-            cur.execute(_sql.format(email, GAME_ID_SNAKE, curr_rooms))
+            cur.execute(_sql.format(email, game_id, curr_rooms))
             mysql.connection.commit()
-            return render_template('waitingPage.html', email=email)
+            return render_template('waitingPage.html', email=email, game_id=game_id)
+
         else:
+            
             _sql = "select No_of_rooms from Mini_Game where GameID = '{0}'"
-            cur.execute(_sql.format(GAME_ID_SNAKE))
+            cur.execute(_sql.format(game_id))
             stored=cur.fetchall()
             curr_rooms = stored[0][0]
             _sql = "insert into Players_In_Game values('{0}','{1}','{2}')"
-            cur.execute(_sql.format(email, GAME_ID_SNAKE, curr_rooms))
+            cur.execute(_sql.format(email, game_id, curr_rooms))
             mysql.connection.commit()
-            snakePartners[email]=snakeWaitingSid[0]
-            snakePartners[snakeWaitingSid[0]]=email
-            return redirect(url_for('SAL'))
+
+            if game_id == GAME_ID_SNAKE:
+                snakePartners[email]=snakeWaitingSid[0]
+                snakePartners[snakeWaitingSid[0]]=email
+                return redirect(url_for('SAL'))
+
+            elif game_id == GAME_ID_CONNECT4:
+                c4pairs[email] = c4WaitingSid[0]
+                c4pairs[c4WaitingSid[0]] = email 
+                return redirect(url_for('Connect4'))
+
     else:
         return redirect(url_for('Login'))
 
@@ -152,32 +176,56 @@ def SAL():
     else:
         return redirect(url_for('Login'))
 
+@app.route('/connect4')
+def Connect4():
+    email = request.cookies.get('email')
+    paired_email = c4pairs[email]
+    if email in logged_in_users:
+        if email in c4WaitingSid:
+            return render_template('connect4.html', email = email, paired_email=paired_email, color="red")
+        else:
+            return render_template('connect4.html', email = email, paired_email=paired_email, color="black")
+    else:
+        return redirect(url_for('Login'))
+
+# Socket IO functionality
 @socketio.on('waiting_id', namespace='/private')
-def receive_waiting_user(user_email):
-    snakeWaitingSid.clear()
-    snakeWaitingSid.append(user_email)
-    snakeWaitingSid.append(request.sid)
-    print((snakeWaitingSid))
-    print(user_email," waiting!")        
+def receive_waiting_user(data):
+
+    if int(data['game_id']) == GAME_ID_SNAKE:
+        snakeWaitingSid.clear()
+        snakeWaitingSid.append(data['player'])
+        snakeWaitingSid.append(request.sid)
+    elif int(data['game_id']) == GAME_ID_CONNECT4:
+        c4WaitingSid.clear()
+        c4WaitingSid.append(data['player'])
+        c4WaitingSid.append(request.sid)        
 
 @socketio.on('user_email', namespace='/private')
-def receive_username(user_email):
-    snakeUsers[user_email] = request.sid
-    print(user_email," added!")
+def receive_username(data):
+    if int(data['game_id']) == GAME_ID_SNAKE:
+        snakeUsers[data['player']] = request.sid
+    elif int(data['game_id']) == GAME_ID_CONNECT4:
+        c4users[data['player']] = request.sid
 
 @socketio.on('redirectionSocket', namespace='/private')
 def leave_waiting(arr):
-    emit('waitingHere',arr,room=snakeWaitingSid[1])
+    if int(arr['game_id']) == GAME_ID_SNAKE:
+        emit('waitingHere',arr,room=snakeWaitingSid[1])
+    elif int(arr['game_id']) == GAME_ID_CONNECT4:
+        emit('waitingHere',arr,room=c4WaitingSid[1])
 
 @socketio.on('moveSender', namespace='/private')
 def send_move(arr):
-    print(arr)
     email = request.cookies.get('email')
     partner = snakePartners[email]
-    # print(email)
-    # print(partner)
-    # print(snakeUsers[partner])
     emit('getMove',arr,room=snakeUsers[partner])
+
+@socketio.on('board', namespace='/private')
+def running_game(data):
+    email = data['user']
+    paired_email = c4pairs[email]
+    emit('game_state',data,room=c4users[paired_email])
 
 if __name__ == "__main__":
     socketio.run(app)

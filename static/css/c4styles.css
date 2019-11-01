@@ -1,0 +1,82 @@
+body {
+    text-align: center;
+}
+  
+#connect4 {
+    background-color: yellow;
+    display: inline-block;
+}
+  
+.col {
+    width: 70px;
+    height: 70px;
+    display: inline-block;
+    background-color: white;
+    border-radius: 50%;
+    margin: 5px;
+}
+  
+.col.empty {
+    cursor: pointer;
+}
+
+.next-red {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+  
+.next-black {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+  
+.col.red {
+    background-color: red;
+}
+  
+.col.black {
+    background-color: black;
+}
+
+.player-container{
+    display: inline-block;
+    background: lightgreen;
+    border: black;
+    border-style: solid;
+    border-width: 3px;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5%;
+}
+
+#player1Color{
+    width: 70px;
+    height: 70px;
+    display: inline-block;
+    background-color: red;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+#player1Name{
+    margin: 5px;
+    text-align: center;
+    text-anchor: middle;
+    font-size: 30px;
+    padding-top: 4%;
+}
+
+#player2Color{
+    width: 70px;
+    height: 70px;
+    display: inline-block;
+    background-color: black;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+#player2Name{
+    margin: 5px;
+    text-align: center;
+    text-anchor: middle;
+    padding-top: 4%;
+    font-size: 30px;
+}

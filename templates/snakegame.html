@@ -113,9 +113,9 @@
         var socket_private = io('http://127.0.0.1:5000/private')
         user_email = document.cookie.split('"')[1];
         document.getElementById('userName').innerHTML = user_email;
-        socket_private.emit('user_email', user_email);
+        socket_private.emit('user_email', {'player': user_email,'game_id': 1});
 
-        socket_private.emit('redirectionSocket', user_email);
+        socket_private.emit('redirectionSocket', {'player': user_email,'game_id': 1});
 
         socket_private.on('send_user_email', function (arr) {
             console.log(arr);

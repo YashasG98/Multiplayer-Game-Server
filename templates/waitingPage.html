@@ -38,12 +38,16 @@
         <div style='margin: auto;' class="loader"></div>
     </div>
     <script>
+        var game_id = `{{ game_id }}`
         var socket_private = io('http://127.0.0.1:5000/private')
         user_email = document.cookie.split('"')[1]
-        socket_private.emit('waiting_id', user_email);
-        // socket_private.emit('redirectionSocket', user_email);
+        socket_private.emit('waiting_id', {'player': user_email, 'game_id': game_id});
         socket_private.on('waitingHere', function (arr) {
-            window.location.href='snakegame.html?player2=yes';
+            if (arr['game_id'] == "1"){
+                window.location.href='snakegame.html?player2=yes';
+            } else if (arr['game_id'] == "2") {
+                window.location.href = `{{url_for('Connect4')}}`
+            }
         });
     </script>
 </body>
