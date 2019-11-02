@@ -6,6 +6,7 @@
   <style>
     .profile-container {
       position: absolute;
+      display: inline-block;
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
       max-width: 300px;
       margin: auto;
@@ -21,8 +22,8 @@
     }
   </style>
   
-  <link rel="stylesheet" href="../static/css/profile.css">
   <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -38,6 +39,22 @@
 </head>
 
 <body>
+
+  <script type="text/javascript">
+    const name = `{{ name }}`;
+    var arr = name.split(' ');
+    const user_firstName = arr[0]; 
+    const user_lastName = arr[1];
+
+    // document.getElementById('submitChanges').onclick = function() {
+    form_firstName = document.getElementById('firstName').value;
+    form_lastName = document.getElementById('lastName').value;
+    
+    console.log(user_firstName,form_firstName,user_lastName,form_lastName);
+    console.log((user_firstName == form_firstName),(user_firstName === form_firstName));
+
+    // } 
+  </script>
 
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -60,35 +77,30 @@
   <!-- Profile Display  -->
   <div class="profile-container">
     <img src="../static/images/avatar.png" alt="John" style="width:100%">
-    <h1 style="margin-top: 10px;">John Doe</h1>
-    <p style="color: grey;font-size: 18px;">Email boi</p>
+    <h1 style="margin-top: 10px;">{{ name }}</h1>
+    <p style="color: grey;font-size: 18px;">{{ email }}</p>
     <div>
       <img src="../static/images/cash.png" style="vertical-align: middle; width: 10%; height: 10%;" />
-      <span style="vertical-align: middle;">Cash Boi</span>
+      <span style="vertical-align: middle;">{{ cash }}</span>
     </div>
     <div style="margin-bottom: 20px;">
-      <img src="../static/images/gold.jpeg" style="vertical-align: middle; width: 10%; height: 10%;" />
-      <span style="vertical-align: middle;">Cash Boi</span>
+      <img src="../static/images/gold.jpeg" style="vertical-align: middle; width: 10%; height: 10%; margin-right: 3px;" />
+      <span style="vertical-align: middle;">{{ gold }}</span>
     </div>
   </div>
 
   <!-- Form Elements -->
   <div style="display: inline-block; position: absolute; top: 13%; left: 50%;">
-    <form>
-      <!-- <div class="form-group">
-        <label for="exampleInputEmail1">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-          placeholder="Enter email">
-      </div> -->
+    <form action="/profile" method="POST">
       <div class="form-group">
         <label for="firstName">First Name</label>
-        <input type="text" class="form-control" id="firstName" placeholder="First Name">
+        <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name" value="{{name.split(' ')[0]}}" >
       </div>
       <div class="form-group">
         <label for="lastName">Last Name</label>
-        <input type="text" class="form-control" id="lastName" placeholder="Last Name">
+        <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name" value="{{name.split(' ')[1]}}">
       </div>
-      <button type="submit" class="btn btn-primary">Edit Profile</button>
+      <input type="submit" value="Edit Profile">
     </form>
   </div>
 

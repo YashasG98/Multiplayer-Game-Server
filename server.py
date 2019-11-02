@@ -101,6 +101,26 @@ def Login():
 
     return render_template('login.html', error = error)
 
+@app.route('/profile', methods = ['GET','POST'])
+def Profile():
+    error = None
+    email = request.cookies.get('email')
+    cur=mysql.connection.cursor()
+    if request.method=='POST':
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        _sql = "update Player_Profile set firstName='{0}', lastName='{1}' where PlayerID = '{2}'"
+        cur.execute(_sql.format(firstName,lastName,email))
+        mysql.connection.commit()
+            
+    _sql = "select * from Player_Profile where PlayerID = '{0}'"
+    cur.execute(_sql.format(email))
+    values = cur.fetchall()
+    cur.close()
+    (user_email,firstName,lastName,cash,gold) = values[0]
+    name = firstName+" "+lastName
+    return render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold)
+
 @app.route('/index.html')
 def Index():
     email = request.cookies.get('email')
