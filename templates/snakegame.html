@@ -39,6 +39,14 @@
         </div>
     </nav>
 
+    <div id='2xFailAlert' class="alert alert-danger" role="alert" hidden>
+        You don't have any 2x Multipliers!
+    </div>
+
+    <div id='2xPassAlert' class="alert alert-success" role="alert" hidden>
+        Multiplier used!
+    </div>
+
     <div id='board' class='center'>
 
     </div>
@@ -64,9 +72,47 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="endModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Game over!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <b id='gameResult'></b>
+                    <br>
+                    <br>
+                    Your Earnings:
+                    <br>
+                    <img src="../static/images/cash.png" style="height: 4vh;">
+                    <b id='playerCash'></b>
+                    <br>
+                    <img src="../static/images/gold.jpeg" style="height: 3vh;">
+                    <b id='playerGold'></b>
+
+                </div>
+                <div class="modal-footer">
+                    <button id='twoxButton' type="button" class="btn btn-success" onclick="twox()">Before I finish, use
+                        2X Multiplier!</button>
+                    <button type="button" class="btn btn-primary">I'm done here!</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class='container'>
         <div class="container">
-            <img id='diceImg' class='center' style='height: 10vh;' src="dice1.png">
+            <div class="row">
+                <img id='diceImg' class='center' style='height: 10vh;' src="../static/images/roll.jpg">
+                <p style="margin-top:1vh;width: 50%;height:6vh;text-align:center;border:2px solid black">
+                    Moves
+                    <br>
+                    <b id='nMoves'>0</b>
+                </p>
+            </div>
         </div>
         <div class="container" style="margin-top: 2vh;height:10vh;">
             <div class="row">
@@ -110,24 +156,38 @@
         $(window).on('load', function () {
             $('#readyModal').modal('show');
         });
+
         var socket_private = io('http://127.0.0.1:5000/private')
         user_email = document.cookie.split('"')[1];
         document.getElementById('userName').innerHTML = user_email;
-        socket_private.emit('user_email', {'player': user_email,'game_id': 1});
+        socket_private.emit('user_email', { 'player': user_email, 'game_id': 1 });
 
-        socket_private.emit('redirectionSocket', {'player': user_email,'game_id': 1});
+        socket_private.emit('redirectionSocket', { 'player': user_email, 'game_id': 1 });
 
         socket_private.on('send_user_email', function (arr) {
             console.log(arr);
         });
 
         socket_private.on('getMove', function (arr) {
-            if (isPlayer2)
-                player1.next = player1.spot + arr[0];
-            else
-                player2.next = player2.spot + arr[0];
-            rollOnce();
-            //console.log(arr);
+            if (arr[0] == 'twoxPassed') {
+                document.getElementById('2xPassAlert').hidden = false;
+                playerCash = playerCash * 2;
+                playerGold = playerGold * 2;
+                document.getElementById('playerCash').innerHTML = playerCash;
+                document.getElementById('playerGold').innerHTML = playerGold;
+                $('#twoxButton').attr('disabled', 'disabled');
+            }
+            else if (arr[0] == 'twoxFailed') {
+                document.getElementById('2xFailAlert').hidden = false;
+                $('#twoxButton').attr('disabled', 'disabled');
+            }
+            else {
+                if (isPlayer2)
+                    player1.next = player1.spot + arr[0];
+                else
+                    player2.next = player2.spot + arr[0];
+                rollOnce();
+            }
         });
     </script>
 

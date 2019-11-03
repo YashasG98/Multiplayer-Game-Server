@@ -21,7 +21,7 @@
       height: 40px;
     }
   </style>
-  
+
   <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -43,15 +43,15 @@
   <script type="text/javascript">
     const name = `{{ name }}`;
     var arr = name.split(' ');
-    const user_firstName = arr[0]; 
+    const user_firstName = arr[0];
     const user_lastName = arr[1];
 
     // document.getElementById('submitChanges').onclick = function() {
     form_firstName = document.getElementById('firstName').value;
     form_lastName = document.getElementById('lastName').value;
-    
-    console.log(user_firstName,form_firstName,user_lastName,form_lastName);
-    console.log((user_firstName == form_firstName),(user_firstName === form_firstName));
+
+    console.log(user_firstName, form_firstName, user_lastName, form_lastName);
+    console.log((user_firstName == form_firstName), (user_firstName === form_firstName));
 
     // } 
   </script>
@@ -84,7 +84,8 @@
       <span style="vertical-align: middle;">{{ cash }}</span>
     </div>
     <div style="margin-bottom: 20px;">
-      <img src="../static/images/gold.jpeg" style="vertical-align: middle; width: 10%; height: 10%; margin-right: 3px;" />
+      <img src="../static/images/gold.jpeg"
+        style="vertical-align: middle; width: 10%; height: 10%; margin-right: 3px;" />
       <span style="vertical-align: middle;">{{ gold }}</span>
     </div>
   </div>
@@ -94,11 +95,13 @@
     <form action="/profile" method="POST">
       <div class="form-group">
         <label for="firstName">First Name</label>
-        <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name" value="{{name.split(' ')[0]}}" >
+        <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name"
+          value="{{name.split(' ')[0]}}">
       </div>
       <div class="form-group">
         <label for="lastName">Last Name</label>
-        <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name" value="{{name.split(' ')[1]}}">
+        <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name"
+          value="{{name.split(' ')[1]}}">
       </div>
       <input type="submit" value="Edit Profile">
     </form>

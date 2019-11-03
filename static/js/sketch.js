@@ -8,6 +8,10 @@ let tiles = [];
 let player1;
 let player2;
 
+let nMoves = 0;
+let playerCash = 0;
+let playerGold = 0;
+
 let lastMoveValue;
 
 function setup() {
@@ -42,21 +46,21 @@ function setup() {
     //     tiles[index].snadder = floor(random(cols - (index % cols), tiles.length - index - 1));
     // }
 
-    tiles[39].snadder = -37;
+    // tiles[39].snadder = -37;
     tiles[26].snadder = -22;
     tiles[42].snadder = -25;
     tiles[53].snadder = -23;
     tiles[65].snadder = -21;
     tiles[75].snadder = -18;
     tiles[88].snadder = -36;
-    tiles[98].snadder = -58;
+    // tiles[98].snadder = -58;
     tiles[3].snadder = 21;
     tiles[12].snadder = 33;
     tiles[41].snadder = 21;
     tiles[49].snadder = 19;
-    tiles[32].snadder = 16;
+    // tiles[32].snadder = 16;
     tiles[61].snadder = 19;
-    tiles[73].snadder = 18;
+    // tiles[73].snadder = 18;
 
     player1 = new Player();
     player2 = new Player();
@@ -77,7 +81,7 @@ function draw() {
 
     if (active_player == 1) {
         if (player1.state == ROLL_STATE) {
-            if(!isPlayer2)
+            if (!isPlayer2)
                 lastMoveValue = player1.rollDie();
             if (!isPlayer2) {
                 if (lastMoveValue == 1) {
@@ -113,7 +117,26 @@ function draw() {
 
         if (player1.spot >= tiles.length - 1) {
             player1.spot = tiles.length - 1;
-            console.log("game over");
+            if (isPlayer2) {
+                playerCash = 25;
+                playerGold = 0;
+                document.getElementById('gameResult').innerHTML = 'Better luck next time!'
+            } else {
+                var movesx = floor(nMoves / 2) + nMoves % 2;
+                playerCash = floor(100 + 1000 / movesx);
+                document.getElementById('gameResult').innerHTML = 'Congrats'
+                if (movesx <= 20)
+                    playerGold = 3;
+                else if (movesx <= 25)
+                    playerGold = 2;
+                else if (movesx <= 30)
+                    playerGold = 1;
+                else
+                    playerGold = 0;
+            }
+            document.getElementById('playerCash').innerHTML = playerCash;
+            document.getElementById('playerGold').innerHTML = playerGold;
+            $('#endModal').modal('show');
             noLoop();
         }
     } else {
@@ -154,7 +177,26 @@ function draw() {
 
         if (player2.spot >= tiles.length - 1) {
             player2.spot = tiles.length - 1;
-            console.log("game over");
+            if (!isPlayer2) {
+                playerCash = 25;
+                playerGold = 0;
+                document.getElementById('gameResult').innerHTML = 'Better luck next time!'
+            } else {
+                var movesx = floor(nMoves / 2) + nMoves % 2;
+                playerCash = floor(100 + 1000 / movesx);
+                document.getElementById('gameResult').innerHTML = 'Congrats'
+                if (movesx <= 20)
+                    playerGold = 3;
+                else if (movesx <= 25)
+                    playerGold = 2;
+                else if (movesx <= 30)
+                    playerGold = 1;
+                else
+                    playerGold = 0;
+            }
+            document.getElementById('playerCash').innerHTML = playerCash;
+            document.getElementById('playerGold').innerHTML = playerGold;
+            $('#endModal').modal('show');
             noLoop();
         }
     }
@@ -167,14 +209,22 @@ function draw() {
 
 function rollOnce() {
 
+    nMoves = nMoves + 1;
+
+    if (!isPlayer2)
+        document.getElementById('nMoves').innerHTML = floor(nMoves / 2) + nMoves % 2;
+    else
+        document.getElementById('nMoves').innerHTML = floor(nMoves / 2);
+
+
     if (player1.spot >= tiles.length - 1) {
         player1.spot = tiles.length - 1;
-        alert("Game over!");
+        $('#endModal').modal('show');
         noLoop();
     }
     else if (player2.spot >= tiles.length - 1) {
         player2.spot = tiles.length - 1;
-        alert("Game over!");
+        $('#endModal').modal('show');
         noLoop();
     }
     else {
@@ -187,8 +237,8 @@ function rollOnce() {
                         redraw();
                     if (isPlayer2)
                         $('#rollButton').removeAttr('disabled');
-                    else{
-                        arr= [lastMoveValue,user_email]
+                    else {
+                        arr = [lastMoveValue, user_email]
                         socket_private.emit('moveSender', arr);
                         // console.log('HERE1');
                         $('#rollButton').attr('disabled', 'disabled');
@@ -208,9 +258,9 @@ function rollOnce() {
                     redraw();
                     if (player2.state == SNADDER_STATE)
                         redraw();
-                    if (isPlayer2){
+                    if (isPlayer2) {
                         $('#rollButton').attr('disabled', 'disabled');
-                        arr= [lastMoveValue,user_email]
+                        arr = [lastMoveValue, user_email]
                         socket_private.emit('moveSender', arr);
                         // console.log('HERE2');
                     }
@@ -226,4 +276,9 @@ function rollOnce() {
 
         }
     }
+}
+
+function twox() {
+    arr = ['check2x']
+    socket_private.emit('moveSender', arr);
 }

@@ -9,7 +9,7 @@ class Player {
 
     rollDie() {
         this.roll = floor(random(1, 7));
-        // this.roll = 1;
+        // this.roll = 20;
         this.next = this.spot + this.roll;
         return this.roll;
     }

@@ -8,8 +8,8 @@ socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'Game_server'
-app.config['MYSQL_PASSWORD'] = 'Game_server1234'
+app.config['MYSQL_PASSWORD'] = 'Game_server'
+# app.config['MYSQL_PASSWORD'] = 'Game_server1234'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
@@ -66,7 +66,7 @@ def Register():
         if(len(data) is 0):
             error = None
             cur.execute("INSERT INTO Login_credentials VALUES(%s,MD5(%s))",(email,password))
-            cur.execute("INSERT INTO Player_profile(email,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
+            cur.execute("INSERT INTO Player_Profile(email,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
             mysql.connection.commit()
             cur.close()
             return redirect(url_for('Login'))
@@ -238,8 +238,25 @@ def leave_waiting(arr):
 @socketio.on('moveSender', namespace='/private')
 def send_move(arr):
     email = request.cookies.get('email')
-    partner = snakePartners[email]
-    emit('getMove',arr,room=snakeUsers[partner])
+    if(arr[0] == 'check2x'):
+        cur=mysql.connection.cursor()
+        arr.clear()
+        _sql = "select Quantity from Owned_Perk where PerkID = '{0}'"
+        cur.execute(_sql.format(1))
+        stored=cur.fetchall()
+        if(len(stored)==0 or stored[0][0]==0):
+            arr.append('twoxFailed')
+        else:
+            newVal = stored[0][0] - 1
+            print(newVal)
+            _sql = "update Owned_Perk set Quantity='{0}' where PlayerID = '{1}' and PerkID = {2}"
+            cur.execute(_sql.format(newVal,email,1))
+            mysql.connection.commit()
+            arr.append('twoxPassed')
+        emit('getMove',arr,room=snakeUsers[email])
+    else:
+        partner = snakePartners[email]
+        emit('getMove',arr,room=snakeUsers[partner])
 
 @socketio.on('board', namespace='/private')
 def running_game(data):
