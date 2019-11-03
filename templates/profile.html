@@ -4,21 +4,17 @@
 <head>
 
   <style>
-    .profile-container {
-      position: absolute;
-      display: inline-block;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      max-width: 300px;
-      margin: auto;
-      text-align: center;
-      left: 20%;
-      top: 13%;
+    .container {
+      width: 100%;
+      overflow: hidden;
     }
 
-    .submit-button {
-
-      width: 80px;
-      height: 40px;
+    .profile-container {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+      margin: 1.5%;
+      text-align: center;
+      float: left;
     }
   </style>
 
@@ -39,23 +35,6 @@
 </head>
 
 <body>
-
-  <script type="text/javascript">
-    const name = `{{ name }}`;
-    var arr = name.split(' ');
-    const user_firstName = arr[0];
-    const user_lastName = arr[1];
-
-    // document.getElementById('submitChanges').onclick = function() {
-    form_firstName = document.getElementById('firstName').value;
-    form_lastName = document.getElementById('lastName').value;
-
-    console.log(user_firstName, form_firstName, user_lastName, form_lastName);
-    console.log((user_firstName == form_firstName), (user_firstName === form_firstName));
-
-    // } 
-  </script>
-
   <!-- Navigation Bar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Multiplayer Game Server</a>
@@ -74,37 +53,40 @@
     </div>
   </nav>
 
-  <!-- Profile Display  -->
-  <div class="profile-container">
-    <img src="../static/images/avatar.png" alt="John" style="width:100%">
-    <h1 style="margin-top: 10px;">{{ name }}</h1>
-    <p style="color: grey;font-size: 18px;">{{ email }}</p>
-    <div>
-      <img src="../static/images/cash.png" style="vertical-align: middle; width: 10%; height: 10%;" />
-      <span style="vertical-align: middle;">{{ cash }}</span>
+  <div class="container">
+    <!-- Profile Display  -->
+    <div class="profile-container">
+      <img src="../static/images/avatar.png" alt="John" style="width:100%">
+      <h1 style="margin-top: 10px;">{{ name }}</h1>
+      <p style="color: grey;font-size: 18px;">{{ email }}</p>
+      <div>
+        <img src="../static/images/cash.png" style="vertical-align: middle; width: 10%; height: 10%;" />
+        <span style="vertical-align: middle;">{{ cash }}</span>
+      </div>
+      <div style="margin-bottom: 20px;">
+        <img src="../static/images/gold.jpeg"
+          style="vertical-align: middle; width: 10%; height: 10%; margin-right: 3px;" />
+        <span style="vertical-align: middle;">{{ gold }}</span>
+      </div>
     </div>
-    <div style="margin-bottom: 20px;">
-      <img src="../static/images/gold.jpeg"
-        style="vertical-align: middle; width: 10%; height: 10%; margin-right: 3px;" />
-      <span style="vertical-align: middle;">{{ gold }}</span>
-    </div>
-  </div>
 
-  <!-- Form Elements -->
-  <div style="display: inline-block; position: absolute; top: 13%; left: 50%;">
-    <form action="/profile" method="POST">
-      <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name"
-          value="{{name.split(' ')[0]}}">
-      </div>
-      <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name"
-          value="{{name.split(' ')[1]}}">
-      </div>
-      <input type="submit" value="Edit Profile">
-    </form>
+    <!-- Form Elements -->
+    <div style="float: left;width: 50%; margin: 1.5%;">
+      <form action="/profile" method="POST">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name"
+            value="{{name.split(' ')[0]}}">
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name"
+            value="{{name.split(' ')[1]}}">
+        </div>
+        <input type="submit" value="Edit Profile">
+      </form>
+    </div>
+
   </div>
 
 </body>

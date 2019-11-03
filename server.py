@@ -8,8 +8,8 @@ socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Game_server'
-# app.config['MYSQL_PASSWORD'] = 'Game_server1234'
+# app.config['MYSQL_PASSWORD'] = 'Game_server'
+app.config['MYSQL_PASSWORD'] = 'Game_server1234'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
@@ -104,21 +104,42 @@ def Login():
 def Profile():
     error = None
     email = request.cookies.get('email')
-    cur=mysql.connection.cursor()
-    if request.method=='POST':
-        firstName = request.form['firstName']
-        lastName = request.form['lastName']
-        _sql = "update Player_Profile set firstName='{0}', lastName='{1}' where PlayerID = '{2}'"
-        cur.execute(_sql.format(firstName,lastName,email))
-        mysql.connection.commit()
-            
-    _sql = "select * from Player_Profile where PlayerID = '{0}'"
-    cur.execute(_sql.format(email))
-    values = cur.fetchall()
-    cur.close()
-    (user_email,firstName,lastName,cash,gold) = values[0]
-    name = firstName+" "+lastName
-    return render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold)
+    if email in  logged_in_users:        
+        cur=mysql.connection.cursor()
+        if request.method=='POST':
+            firstName = request.form['firstName']
+            lastName = request.form['lastName']
+            _sql = "update Player_Profile set firstName='{0}', lastName='{1}' where PlayerID = '{2}'"
+            cur.execute(_sql.format(firstName,lastName,email))
+            mysql.connection.commit()
+                
+        _sql = "select * from Player_Profile where PlayerID = '{0}'"
+        cur.execute(_sql.format(email))
+        values = cur.fetchall()
+        cur.close()
+        (user_email,firstName,lastName,cash,gold) = values[0]
+        name = firstName+" "+lastName
+        return render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold)
+    else:
+        return redirect(url_for('Login'))
+
+@app.route('/leaderboard')
+def LeaderBoard():
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        cur = mysql.connect.cursor()
+        _sql = "select @rank:=@rank+1 as rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc"
+        cur.execute(_sql)
+        values = cur.fetchall()
+        cash_leaderboard = [list(x) for x in values]
+        _sql = "select @rank:=@rank+1 as rank, firstName, lastName, Gold from Player_Profile p, (select @rank := 0) r order by Gold desc"
+        cur.execute(_sql)
+        values = cur.fetchall()
+        gold_leaderboard = [list(x) for x in values]
+        cur.close()
+        return render_template('leaderboard.html',cash_leaderboard=cash_leaderboard, gold_leaderboard=gold_leaderboard)
+    else:
+        return redirect(url_for('Login'))
 
 @app.route('/index.html')
 def Index():
@@ -274,14 +295,21 @@ def update_db(arr):
     _sql = "select GameID,RoomID from Players_In_Game where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
     stored=cur.fetchall()
-    print('HERE',stored)
     gameID = stored[0][0]
     roomID = stored[0][1]
     _sql = "insert into Player_History values ('{0}',{1},{2},{3},{4});"
-    print(_sql.format(email,gameID,roomID,arr[0],arr[1]))
     cur.execute(_sql.format(email,gameID,roomID,arr[0],arr[1]))
     _sql = "delete from Players_In_Game where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
+    # _sql = "select Cash,Gold from Player_Profile where PlayerID = '{0}'"
+    # cur.execute(_sql.format(email))
+    # stored = cur.fetchall()
+    # cash = stored[0][0]
+    # gold = stored[0][1]
+    # cash += arr[0]
+    # gold += arr[1]
+    # _sql = "update Player_Profile set Cash={0}, Gold={1} where PlayerID='{2}'"
+    # cur.execute(_sql.format(cash,gold,email))
     mysql.connection.commit()
     cur.close()
 
