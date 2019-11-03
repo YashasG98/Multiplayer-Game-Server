@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script type="text/javascript" src="../static/js/store.js"></script>
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Multiplayer Game Server</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
+                </li>
+            </ul>
+            <span class="navbar-text">
+            </span>
+        </div>
+    </nav>
+
+    <div id='perkPassAlert' class="alert alert-success" role="alert" hidden>
+        Perk Bought!
+    </div>
+    <div id='perkFailAlert' class="alert alert-danger" role="alert" hidden>
+        Not enough Gold :(
+    </div>
+
+    <div class="container"
+        style="padding-top:1vh;margin-top: 4vh;margin-bottom: 4vh;border: 2px solid black; text-align :center;">
+        <p>
+            Available gold : <b id='availableGold'></b>
+            <img src="../static/images/gold.jpeg" style="height: 2vh;">
+        </p>
+    </div>
+    <div class="container">
+        {% for item in perks %}
+        <div class="card bg-light mb-3" style="margin-top: 2vh;">
+            <h5 class="card-header">{{perks[loop.index0][1]}}</h5>
+            <div class="card-body">
+                <h5 class="card-title">Price : {{perks[loop.index0][3]}} <img src="../static/images/gold.jpeg"
+                        style="height: 2vh;"></h5>
+                <p class="card-text">{{perks[loop.index0][2]}}</p>
+                <a href="#" class="btn btn-primary"
+                    onclick="buyPerk([{{perks[loop.index0][0]}},{{perks[loop.index0][3]}}])">Buy this!</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        var socket_private = io('http://127.0.0.1:5000/private')
+        var availableGold = 0;
+        arr = ['getAvailableGold']
+        socket_private.emit('buyPerk', arr);
+        socket_private.on('perkResult', function (arr) {
+            if (arr[0] == 'goldAvailable') {
+                availableGold = arr[1];
+                document.getElementById('availableGold').innerHTML = availableGold;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -8,8 +8,8 @@ socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'Game_server'
-app.config['MYSQL_PASSWORD'] = 'Game_server1234'
+app.config['MYSQL_PASSWORD'] = 'Game_server'
+# app.config['MYSQL_PASSWORD'] = 'Game_server1234'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
@@ -138,6 +138,20 @@ def Leaderboard():
         gold_leaderboard = [list(x) for x in values]
         cur.close()
         return render_template('leaderboard.html',cash_leaderboard=cash_leaderboard, gold_leaderboard=gold_leaderboard)
+    else:
+        return redirect(url_for('Login'))
+
+@app.route('/shop')
+def Shop():
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        cur = mysql.connect.cursor()
+        _sql = "select * from Perks_Available"
+        cur.execute(_sql)
+        values = cur.fetchall()
+        perks = [list(x) for x in values]
+        cur.close()
+        return render_template('store.html', perks = perks)
     else:
         return redirect(url_for('Login'))
 
@@ -303,10 +317,6 @@ def running_game(data):
 
 @socketio.on('update_database', namespace='/private')
 def update_db(arr):
-    # if int(data['game_id']) == GAME_ID_SNAKE:
-    #     snakeUsers[data['player']] = request.sid
-    # elif int(data['game_id']) == GAME_ID_CONNECT4:
-    #     c4users[data['player']] = request.sid
     email = request.cookies.get('email')
     cur=mysql.connection.cursor()
     _sql = "select GameID,RoomID from Players_In_Game where PlayerID = '{0}'"
@@ -318,17 +328,49 @@ def update_db(arr):
     cur.execute(_sql.format(email,gameID,roomID,arr[0],arr[1]))
     _sql = "delete from Players_In_Game where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
-    # _sql = "select Cash,Gold from Player_Profile where PlayerID = '{0}'"
-    # cur.execute(_sql.format(email))
-    # stored = cur.fetchall()
-    # cash = stored[0][0]
-    # gold = stored[0][1]
-    # cash += arr[0]
-    # gold += arr[1]
-    # _sql = "update Player_Profile set Cash={0}, Gold={1} where PlayerID='{2}'"
-    # cur.execute(_sql.format(cash,gold,email))
+    _sql = "select Cash,Gold from Player_Profile where PlayerID = '{0}'"
+    cur.execute(_sql.format(email))
+    stored = cur.fetchall()
+    cash = stored[0][0]
+    gold = stored[0][1]
+    cash += arr[0]
+    gold += arr[1]
+    _sql = "update Player_Profile set Cash={0}, Gold={1} where PlayerID='{2}'"
+    cur.execute(_sql.format(cash,gold,email))
     mysql.connection.commit()
     cur.close()
+
+@socketio.on('buyPerk', namespace='/private')
+def buyPerk(arr):
+    email = request.cookies.get('email')
+    cur=mysql.connection.cursor()
+    if(arr[0]=='getAvailableGold'):
+        _sql = "select Gold from Player_Profile where PlayerID = '{0}'"
+        cur.execute(_sql.format(email))
+        stored = cur.fetchall()
+        gold = stored[0][0]
+        arr.clear()
+        arr.append('goldAvailable')
+        arr.append(gold)
+        emit('perkResult',arr,room=request.sid)
+    else:
+        _sql = "select Quantity from Owned_Perk where PlayerID = '{0}' and PerkID = {1}"
+        # print('HERE',_sql.format(email,arr[1]))
+        cur.execute(_sql.format(email,arr[1]))
+        stored=cur.fetchall()
+        # print(stored)
+        if(len(stored) is 0):
+            quantity = 1
+            _sql = "insert into Owned_Perk values('{0}',{1},{2})"
+            cur.execute(_sql.format(email,arr[1],quantity))
+        else:
+            quantity = stored[0][0]
+            quantity = quantity + 1
+            _sql = "update Owned_Perk set Quantity ={0} where PlayerID = '{1}' and PerkID = {2}"
+            cur.execute(_sql.format(quantity,email,arr[1]))
+        _sql = "update Player_Profile set Gold ={0} where PlayerID = '{1}'"
+        cur.execute(_sql.format(arr[2],email))
+        mysql.connection.commit()
 
 if __name__ == "__main__":
     socketio.run(app)
