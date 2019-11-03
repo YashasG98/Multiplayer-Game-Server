@@ -3,17 +3,23 @@ body {
 }
   
 #connect4 {
+
     background-color: yellow;
-    display: inline-block;
+    margin: auto;
+    width: 480px;
+    height: 480px;
+    margin-top: 1%;
+    margin-bottom: 0.5%;
+    /* display: inline-block; */
 }
   
 .col {
-    width: 70px;
+    width: 100%;
     height: 70px;
     display: inline-block;
     background-color: white;
     border-radius: 50%;
-    margin: 5px;
+    margin: 1%;
 }
   
 .col.empty {
@@ -36,47 +42,36 @@ body {
     background-color: black;
 }
 
-.player-container{
-    display: inline-block;
+#parent {
+    display: flex;
+    width: 60%;
+    margin: auto;
     background: lightgreen;
     border: black;
     border-style: solid;
-    border-width: 3px;
-    margin: 5px;
-    padding: 10px;
+    border-width: thin;
     border-radius: 5%;
 }
 
-#player1Color{
-    width: 70px;
-    height: 70px;
-    display: inline-block;
-    background-color: red;
+#player1Color {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    margin: 5px;
-}
-
-#player1Name{
-    margin: 5px;
-    text-align: center;
-    text-anchor: middle;
-    font-size: 30px;
-    padding-top: 4%;
+    background: red;
+    padding: 1%;
+    margin: 1%;
 }
 
 #player2Color{
-    width: 70px;
-    height: 70px;
-    display: inline-block;
-    background-color: black;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    margin: 5px;
+    background: black;
+    padding: 1%;
+    margin: 1%;   
 }
 
-#player2Name{
-    margin: 5px;
-    text-align: center;
-    text-anchor: middle;
-    padding-top: 4%;
-    font-size: 30px;
+#playerName {
+    flex: 1;
+    padding-top: 3.2%;
 }

@@ -8,6 +8,9 @@ class Connect4 {
         this.isGameOver = false;
         this.rowOfCellClicked = null;
         this.colOfCellClicked = null;
+        this.noOfTurns = 0;
+        this.cashWon = 0;
+        this.goldWon = 0;
         this.onPlayerMove = function () { };
         this.createGrid();
         this.setupEventListeners();
@@ -18,6 +21,34 @@ class Connect4 {
             $cell.addClass(`${p}`);
             $cell.data('player', `${p}`);
         };
+
+        this.calculateWinnings = function(){
+            if (this.noOfTurns == 21){
+                // Draw
+                this.cashWon = 50;
+                this.goldWon = 1;
+                document.getElementById('gameResult').innerHTML = 'Draw :('
+                document.getElementById('playerCash').innerHTML = this.cashWon;
+                document.getElementById('playerGold').innerHTML = this.goldWon;
+                $('#endModal').modal('show');
+                return;
+            }
+            if (this.player === this.turn){
+                // Win
+                document.getElementById('gameResult').innerHTML = 'Congrats!'
+                this.cashWon = 100 + Math.ceil(80/this.noOfTurns);
+                this.goldWon = Math.ceil(20/this.noOfTurns);
+            } else {
+                // Loss
+                document.getElementById('gameResult').innerHTML = 'Better luck next time!'
+                this.cashWon = 25;
+                this.goldWon = 0;
+            }
+            document.getElementById('playerCash').innerHTML = this.cashWon;
+            document.getElementById('playerGold').innerHTML = this.goldWon;
+            $('#endModal').modal('show');
+
+        };
     }
 
     createGrid() {
@@ -27,7 +58,9 @@ class Connect4 {
         this.player = 'red';
         for (let row = 0; row < this.ROWS; row++) {
             const $row = $('<div>')
-                .addClass('row');
+                .addClass('row')
+                .attr('style','margin-left:1%;margin-right:1%');
+            
             for (let col = 0; col < this.COLS; col++) {
                 const $col = $('<div>')
                     .addClass('col empty')
@@ -82,13 +115,15 @@ class Connect4 {
                     $lastEmptyCell.data('col'));
 
                 if (winner) {
+                    that.noOfTurns++;
                     that.isGameOver = true;
-                    alert(`Game Over! You have won!`);
                     $('.col.empty').removeClass('empty');
                     that.onPlayerMove();
+                    that.calculateWinnings();
                     return;
                 }
 
+                that.noOfTurns++;
                 that.turn = (that.turn === 'red') ? 'black' : 'red';
                 that.onPlayerMove();
                 $(this).trigger('mouseenter');
@@ -178,11 +213,43 @@ $(document).ready(function () {
     }
     
     socket.on('game_state', data => {
-        if (data['game_over']){
-            alert(`Game Over! ${data['user']} wins the game`);
+
+        console.log(data);
+        console.log(data == "failed",data==="failed");
+        if (data == "fail"){
+
+            document.getElementById('2xFailAlert').hidden = false;
+            $('#twoxButton').attr('disabled', 'disabled');
+
+        } else if (data == "passed") {
+
+            document.getElementById('2xPassAlert').hidden = false;
+            connect4.cashWon = connect4.cashWon * 2;
+            connect4.goldWon = connect4.goldWon * 2;
+            document.getElementById('playerCash').innerHTML = connect4.cashWon;
+            document.getElementById('playerGold').innerHTML = connect4.goldWon;
+            $('#twoxButton').attr('disabled', 'disabled');
+
         } else {
-            connect4.turn = data['turn'];
+
+            if (data['game_over']){
+                connect4.fillCell(data['row'], data['col'], data['player']);
+                connect4.calculateWinnings();
+            } else {
+                connect4.fillCell(data['row'], data['col'], data['player']);
+                connect4.turn = data['turn'];
+            }
+
         }
-        connect4.fillCell(data['row'], data['col'], data['player']);
+    });
+
+    $('#twoxButton').click( function() {
+        socket.emit('board',"twoXMultiplier");
+    });
+
+    $('#doneButton').click( function() {
+        arr = [playerCash, playerGold]
+        socket.emit('update_database', arr);
+        window.location.href = 'index.html'
     });
 });

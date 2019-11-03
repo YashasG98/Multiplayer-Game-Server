@@ -124,7 +124,7 @@ def Profile():
         return redirect(url_for('Login'))
 
 @app.route('/leaderboard')
-def LeaderBoard():
+def Leaderboard():
     email = request.cookies.get('email')
     if email in logged_in_users:
         cur = mysql.connect.cursor()
@@ -280,9 +280,26 @@ def send_move(arr):
 
 @socketio.on('board', namespace='/private')
 def running_game(data):
-    email = data['user']
-    paired_email = c4pairs[email]
-    emit('game_state',data,room=c4users[paired_email])
+    print (f"\n\n"+str(data)+" "+str("twoXMultiplier")+" "+" "+(str(data == "twoXMultiplier"))+"\n\n")
+    if data == "twoXMultiplier":
+        email = request.cookies.get('email')
+        cur=mysql.connection.cursor()
+        _sql = "select Quantity from Owned_Perk where PerkID = '{0}'"
+        cur.execute(_sql.format(1))
+        stored=cur.fetchall()
+        if(len(stored)==0 or stored[0][0]==0):
+            emit('game_state',"fail",room=c4users[email])
+        else:
+            newVal = stored[0][0] - 1
+            print(newVal)
+            _sql = "update Owned_Perk set Quantity='{0}' where PlayerID = '{1}' and PerkID = {2}"
+            cur.execute(_sql.format(newVal,email,1))
+            mysql.connection.commit()
+            emit('game_state',"passed",room=c4users[email])
+    else:
+        email = data['user']
+        paired_email = c4pairs[email]
+        emit('game_state',data,room=c4users[paired_email])
 
 @socketio.on('update_database', namespace='/private')
 def update_db(arr):
