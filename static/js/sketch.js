@@ -282,3 +282,9 @@ function twox() {
     arr = ['check2x']
     socket_private.emit('moveSender', arr);
 }
+
+function updateAndExit(){
+    arr = [playerCash, playerGold]
+    socket_private.emit('update_database', arr);
+    window.location.href = 'index.html'
+}

@@ -98,7 +98,6 @@ def Login():
                 return resp
             else:
                 error = 'Invalid password'
-
     return render_template('login.html', error = error)
 
 @app.route('/profile', methods = ['GET','POST'])
@@ -263,6 +262,28 @@ def running_game(data):
     email = data['user']
     paired_email = c4pairs[email]
     emit('game_state',data,room=c4users[paired_email])
+
+@socketio.on('update_database', namespace='/private')
+def update_db(arr):
+    # if int(data['game_id']) == GAME_ID_SNAKE:
+    #     snakeUsers[data['player']] = request.sid
+    # elif int(data['game_id']) == GAME_ID_CONNECT4:
+    #     c4users[data['player']] = request.sid
+    email = request.cookies.get('email')
+    cur=mysql.connection.cursor()
+    _sql = "select GameID,RoomID from Players_In_Game where PlayerID = '{0}'"
+    cur.execute(_sql.format(email))
+    stored=cur.fetchall()
+    print('HERE',stored)
+    gameID = stored[0][0]
+    roomID = stored[0][1]
+    _sql = "insert into Player_History values ('{0}',{1},{2},{3},{4});"
+    print(_sql.format(email,gameID,roomID,arr[0],arr[1]))
+    cur.execute(_sql.format(email,gameID,roomID,arr[0],arr[1]))
+    _sql = "delete from Players_In_Game where PlayerID = '{0}'"
+    cur.execute(_sql.format(email))
+    mysql.connection.commit()
+    cur.close()
 
 if __name__ == "__main__":
     socketio.run(app)
