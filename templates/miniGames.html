@@ -17,7 +17,7 @@
             aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <!-- <button onclick="clearCookie()">HERE</button> -->
+
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
@@ -38,7 +38,7 @@
         <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-success btn-lg btn-block" onclick="window.location=`{{url_for('Waiting', game_id=1)}}`">Snake 'n Ladders</button>
         <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-success btn-lg btn-block" onclick="window.location=`{{url_for('Waiting', game_id=2)}}`">Connect 4</button>
         <button style="margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;" type="button" class="btn btn-primary btn-lg btn-block">Coming Soon</button>
-        <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button" class="btn btn-danger btn-lg btn-block">Back</button>
+        <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button" class="btn btn-danger btn-lg btn-block" onclick="window.location=`{{url_for('Index')}}`">Back</button>
     </div>
 </body>
 
