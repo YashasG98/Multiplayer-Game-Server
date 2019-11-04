@@ -208,7 +208,10 @@ function draw() {
 }
 
 function rollOnce() {
-
+    document.getElementById('2xPassAlert').hidden = true;
+    document.getElementById('headStartPassAlert').hidden = true;
+    document.getElementById('2xFailAlert').hidden = true;
+    document.getElementById('headStartFailAlert').hidden = true;
     nMoves = nMoves + 1;
 
     if (!isPlayer2)
@@ -283,7 +286,16 @@ function twox() {
     socket_private.emit('moveSender', arr);
 }
 
-function updateAndExit(){
+function headStart() {
+    if (isPlayer2)
+        arr = ['checkHeadStart', 'p2']
+    else
+        arr = ['checkHeadStart', 'p1']
+    socket_private.emit('moveSender', arr);
+}
+
+
+function updateAndExit() {
     arr = [playerCash, playerGold]
     socket_private.emit('update_database', arr);
     window.location.href = 'index.html'

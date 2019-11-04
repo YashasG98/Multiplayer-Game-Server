@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request,redirect, url_for, make_response
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, send, emit
+import random
 
 app = Flask(__name__)
 app.config.from_object('config.Config')
@@ -282,12 +283,34 @@ def send_move(arr):
             arr.append('twoxFailed')
         else:
             newVal = stored[0][0] - 1
-            print(newVal)
+            # print(newVal)
             _sql = "update Owned_Perk set Quantity='{0}' where PlayerID = '{1}' and PerkID = {2}"
             cur.execute(_sql.format(newVal,email,1))
             mysql.connection.commit()
             arr.append('twoxPassed')
         emit('getMove',arr,room=snakeUsers[email])
+    elif(arr[0] == 'checkHeadStart'):
+        player1 = True
+        if(arr[1]=='p2'):
+            player1 = False
+        cur=mysql.connection.cursor()
+        arr.clear()
+        arr.append(player1)
+        _sql = "select Quantity from Owned_Perk where PerkID = '{0}'"
+        cur.execute(_sql.format(2))
+        stored=cur.fetchall()
+        if(len(stored)==0 or stored[0][0]==0):
+            arr.append('headStartFailed')
+        else:
+            newVal = stored[0][0] - 1
+            print(newVal)
+            _sql = "update Owned_Perk set Quantity='{0}' where PlayerID = '{1}' and PerkID = {2}"
+            cur.execute(_sql.format(newVal,email,2))
+            mysql.connection.commit()
+            arr.append('headStartPassed')
+            arr.append(random.randint(1,11))
+        emit('getMove',arr,room=snakeUsers[email])
+        emit('getMove',arr,room=snakeUsers[snakePartners[email]])
     else:
         partner = snakePartners[email]
         emit('getMove',arr,room=snakeUsers[partner])

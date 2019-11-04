@@ -47,6 +47,14 @@
         Multiplier used!
     </div>
 
+    <div id='headStartPassAlert' class="alert alert-success" role="alert" hidden>
+        Headstart obtained!
+    </div>
+
+    <div id='headStartFailAlert' class="alert alert-success" role="alert" hidden>
+        You don't have any headstarts available!
+    </div>
+
     <div id='board' class='center'>
 
     </div>
@@ -66,7 +74,8 @@
                     Are you ready to play?
                 </div>
                 <div class="modal-footer">
-                    <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+                    <button id='headStartButton' type="button" class="btn btn-success" onclick="headStart()">Gimme a
+                        head start!</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Let's go!</button>
                 </div>
             </div>
@@ -180,6 +189,22 @@
             else if (arr[0] == 'twoxFailed') {
                 document.getElementById('2xFailAlert').hidden = false;
                 $('#twoxButton').attr('disabled', 'disabled');
+            }
+            else if (arr[1] == 'headStartFailed') {
+                if((!isPlayer2 && arr[0])||(isPlayer2 && !arr[0])){
+                    document.getElementById('headStartFailAlert').hidden = false;
+                    $('#headStartButton').attr('disabled', 'disabled');
+                }
+            }
+            else if (arr[1] == 'headStartPassed') {
+                if((!isPlayer2 && arr[0])||(isPlayer2 && !arr[0])){
+                    document.getElementById('headStartPassAlert').hidden = false;
+                    $('#headStartButton').attr('disabled', 'disabled');
+                }
+                if(arr[0])
+                    player1.spot += arr[2];
+                else
+                    player2.spot += arr[2];
             }
             else {
                 if (isPlayer2)
