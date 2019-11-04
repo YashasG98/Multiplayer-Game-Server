@@ -140,6 +140,24 @@ def Leaderboard():
     else:
         return redirect(url_for('Login'))
 
+@app.route('/history')
+def PlayerHistory():
+    email = request.cookies.get('email')
+    if email in logged_in_users:
+        cur = mysql.connect.cursor()
+        _sql = "select @rank:=@rank+1 as rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
+        cur.execute(_sql.format(email,GAME_ID_SNAKE))
+        values = cur.fetchall()
+        snake_history = [list(x) for x in values]
+        _sql = "select @rank:=@rank+1 as rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
+        cur.execute(_sql.format(email,GAME_ID_CONNECT4))
+        values = cur.fetchall()
+        connect4_history = [list(x) for x in values]
+        cur.close()
+        return render_template('playerHistory.html',snake_history=snake_history, connect4_history=connect4_history)
+    else:
+        return redirect(url_for('Login'))
+
 @app.route('/shop')
 def Shop():
     email = request.cookies.get('email')
@@ -319,8 +337,8 @@ def running_game(data):
     if data == "twoXMultiplier":
         email = request.cookies.get('email')
         cur=mysql.connection.cursor()
-        _sql = "select Quantity from Owned_Perk where PerkID = '{0}'"
-        cur.execute(_sql.format(1))
+        _sql = "select Quantity from Owned_Perk where PlayerID = '{0}' and PerkID = '{1}'"
+        cur.execute(_sql.format(email,1))
         stored=cur.fetchall()
         if(len(stored)==0 or stored[0][0]==0):
             emit('game_state',"fail",room=c4users[email])
