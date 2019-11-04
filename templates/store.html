@@ -30,6 +30,18 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('MiniGames')}}"><b>Play!</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Profile')}}"><b>Profile</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Shop')}}"><b>Secret Shop</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('Leaderboard')}}"><b>Leaderboard</b></a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
                 </li>
             </ul>

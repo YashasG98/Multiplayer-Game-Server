@@ -124,7 +124,7 @@ function draw() {
             } else {
                 var movesx = floor(nMoves / 2) + nMoves % 2;
                 playerCash = floor(100 + 1000 / movesx);
-                document.getElementById('gameResult').innerHTML = 'Congrats'
+                document.getElementById('gameResult').innerHTML = 'Congrats!'
                 if (movesx <= 20)
                     playerGold = 3;
                 else if (movesx <= 25)

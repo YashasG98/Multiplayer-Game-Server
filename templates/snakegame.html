@@ -30,9 +30,6 @@
         <!-- <button onclick="clearCookie()">HERE</button> -->
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
-                </li>
             </ul>
             <span class="navbar-text">
             </span>
@@ -51,7 +48,7 @@
         Headstart obtained!
     </div>
 
-    <div id='headStartFailAlert' class="alert alert-success" role="alert" hidden>
+    <div id='headStartFailAlert' class="alert alert-danger" role="alert" hidden>
         You don't have any headstarts available!
     </div>
 

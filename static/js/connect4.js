@@ -248,7 +248,7 @@ $(document).ready(function () {
     });
 
     $('#doneButton').click( function() {
-        arr = [playerCash, playerGold]
+        arr = [connect4.cashWon,connect4.goldWon]
         socket.emit('update_database', arr);
         window.location.href = 'index.html'
     });

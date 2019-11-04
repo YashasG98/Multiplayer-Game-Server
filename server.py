@@ -35,8 +35,6 @@ def Home():
     email = request.args.get('email')
     if email in logged_in_users:
         logged_in_users.remove(email)
-        # cannot delete cookie, but works even without deleting
-        # resp.delete_cookie('email')
     return resp        
 
 @app.route('/register.html',methods = ['GET','POST'])
@@ -52,9 +50,9 @@ def Register():
         if(len(email) is 0):
             error = 'Email cannot be empty'
             return render_template('register.html', error = error)
-        # if (len(password) < 8):
-        #     error = 'Password must be 8 characters long'
-        #     return render_template('register.html', error = error)
+        if (len(password) < 8):
+            error = 'Password must be 8 characters long'
+            return render_template('register.html', error = error)
         if (len(firstName) is 0):
             error = 'First Name cannot be empty'
             return render_template('register.html', error = error)
@@ -67,7 +65,7 @@ def Register():
         if(len(data) is 0):
             error = None
             cur.execute("INSERT INTO Login_credentials VALUES(%s,MD5(%s))",(email,password))
-            cur.execute("INSERT INTO Player_Profile(email,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
+            cur.execute("INSERT INTO Player_Profile(PlayerID,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
             mysql.connection.commit()
             cur.close()
             return redirect(url_for('Login'))
@@ -276,8 +274,8 @@ def send_move(arr):
     if(arr[0] == 'check2x'):
         cur=mysql.connection.cursor()
         arr.clear()
-        _sql = "select Quantity from Owned_Perk where PerkID = '{0}'"
-        cur.execute(_sql.format(1))
+        _sql = "select Quantity from Owned_Perk where PlayerID = '{0}' and PerkID = '{1}'"
+        cur.execute(_sql.format(email,1))
         stored=cur.fetchall()
         if(len(stored)==0 or stored[0][0]==0):
             arr.append('twoxFailed')
@@ -296,8 +294,8 @@ def send_move(arr):
         cur=mysql.connection.cursor()
         arr.clear()
         arr.append(player1)
-        _sql = "select Quantity from Owned_Perk where PerkID = '{0}'"
-        cur.execute(_sql.format(2))
+        _sql = "select Quantity from Owned_Perk where PlayerID = '{0}' and PerkID = '{1}'"
+        cur.execute(_sql.format(email,2))
         stored=cur.fetchall()
         if(len(stored)==0 or stored[0][0]==0):
             arr.append('headStartFailed')
