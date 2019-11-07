@@ -333,7 +333,6 @@ def send_move(arr):
 
 @socketio.on('board', namespace='/private')
 def running_game(data):
-    print (f"\n\n"+str(data)+" "+str("twoXMultiplier")+" "+" "+(str(data == "twoXMultiplier"))+"\n\n")
     if data == "twoXMultiplier":
         email = request.cookies.get('email')
         cur=mysql.connection.cursor()
