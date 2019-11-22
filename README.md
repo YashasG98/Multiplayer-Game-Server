@@ -14,6 +14,9 @@ pip install -r requirements.txt
 ```bash
 sudo mysql_secure_installation
 mysql -u root -p
+#enter your password when prompted
+mysql > source db_config.sql
+mysql > quit
 exit
 ```
 
