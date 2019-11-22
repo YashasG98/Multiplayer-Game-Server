@@ -9,8 +9,8 @@ socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Game_server'
-# app.config['MYSQL_PASSWORD'] = 'Game_server1234'
+# app.config['MYSQL_PASSWORD'] = 'Game_server'
+app.config['MYSQL_PASSWORD'] = 'Game_server1234'
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
@@ -59,12 +59,12 @@ def Register():
         
         #Valid input handling
         cur=mysql.connection.cursor()
-        _sql = "select * from Login_credentials where PlayerID = '{0}'"
+        _sql = "select * from Login_Credentials where PlayerID = '{0}'"
         cur.execute(_sql.format(email))
         data=cur.fetchall()
         if(len(data) is 0):
             error = None
-            cur.execute("INSERT INTO Login_credentials VALUES(%s,MD5(%s))",(email,password))
+            cur.execute("INSERT INTO Login_Credentials VALUES(%s,MD5(%s))",(email,password))
             cur.execute("INSERT INTO Player_Profile(PlayerID,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
             mysql.connection.commit()
             cur.close()
@@ -83,7 +83,7 @@ def Login():
         _sql = "select md5('{0}')"
         cur.execute(_sql.format(password))
         enc_string=cur.fetchall()
-        _sql = "select password from Login_credentials where PlayerID = '{0}'"
+        _sql = "select password from Login_Credentials where PlayerID = '{0}'"
         cur.execute(_sql.format(email))
         stored=cur.fetchall()
         if(len(stored) is 0):
@@ -197,7 +197,7 @@ def Waiting():
     if email in logged_in_users:
     
         cur=mysql.connection.cursor()
-        _sql = "select GameID from Players_In_Game where GameID = '{0}'"
+        _sql = "select GameID from Players_in_Game where GameID = '{0}'"
         cur.execute(_sql.format(game_id))
         stored=cur.fetchall()
     
@@ -210,7 +210,7 @@ def Waiting():
             curr_rooms = curr_rooms + 1
             _sql = "update Mini_Game set No_of_rooms = '{0}' where GameID = '{1}'"
             cur.execute(_sql.format(curr_rooms,game_id))
-            _sql = "insert into Players_In_Game values('{0}','{1}','{2}')"
+            _sql = "insert into Players_in_Game values('{0}','{1}','{2}')"
             cur.execute(_sql.format(email, game_id, curr_rooms))
             mysql.connection.commit()
             return render_template('waitingPage.html', email=email, game_id=game_id)
@@ -221,7 +221,7 @@ def Waiting():
             cur.execute(_sql.format(game_id))
             stored=cur.fetchall()
             curr_rooms = stored[0][0]
-            _sql = "insert into Players_In_Game values('{0}','{1}','{2}')"
+            _sql = "insert into Players_in_Game values('{0}','{1}','{2}')"
             cur.execute(_sql.format(email, game_id, curr_rooms))
             mysql.connection.commit()
 
@@ -357,14 +357,14 @@ def running_game(data):
 def update_db(arr):
     email = request.cookies.get('email')
     cur=mysql.connection.cursor()
-    _sql = "select GameID,RoomID from Players_In_Game where PlayerID = '{0}'"
+    _sql = "select GameID,RoomID from Players_in_Game where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
     stored=cur.fetchall()
     gameID = stored[0][0]
     roomID = stored[0][1]
     _sql = "insert into Player_History values ('{0}',{1},{2},{3},{4});"
     cur.execute(_sql.format(email,gameID,roomID,arr[0],arr[1]))
-    _sql = "delete from Players_In_Game where PlayerID = '{0}'"
+    _sql = "delete from Players_in_Game where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
     _sql = "select Cash,Gold from Player_Profile where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
