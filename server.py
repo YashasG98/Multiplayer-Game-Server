@@ -64,8 +64,8 @@ def Register():
         data=cur.fetchall()
         if(len(data) is 0):
             error = None
-            cur.execute("INSERT INTO Login_Credentials VALUES(%s,MD5(%s))",(email,password))
             cur.execute("INSERT INTO Player_Profile(PlayerID,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
+            cur.execute("INSERT INTO Login_Credentials VALUES(%s,MD5(%s))",(email,password))
             mysql.connection.commit()
             cur.close()
             return redirect(url_for('Login'))
