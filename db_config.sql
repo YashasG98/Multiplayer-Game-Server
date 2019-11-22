@@ -62,17 +62,13 @@ create table Owned_Perk (
 	foreign key (PerkID) references Perks_Available (PerkID) on delete cascade on update cascade
 );
 
---to initialise Mini_Game table
 
 insert into Mini_Game values(1,0);
 insert into Mini_Game values(2,0);
 
---to initialise Perks_Available table
 
 insert into Perks_Available values(1,'2x Multiplier','Used to multiply both cash and gold obtained from a game!',4);
 insert into Perks_Available values(2,'Head start!','Used to obtain a random headstart between 1 to 10 in Snakes \'n Ladders!',6);
-
---stored procedures
 
 delimiter $$
 
