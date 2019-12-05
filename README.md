@@ -5,8 +5,8 @@ A web app which supports multiplayer gaming.
 ### Setting up Virtual Environment and Install Requirements
 ```bash
 sudo pip install virtualenv
-python3 -m venv myvenv
-source myvenv/bin/activate
+python3 -m venv flaskenv
+source flaskenv/bin/activate
 pip install -r requirements.txt
 ```
 
