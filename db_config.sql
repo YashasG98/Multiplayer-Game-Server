@@ -20,7 +20,7 @@ create table Login_Credentials (
 
 create table Mini_Game (
 	GameID int,
-	No_of_rooms int default 0,
+	No_of_rooms int,
 	primary key (GameID)
 );
 
@@ -41,27 +41,25 @@ create table Player_History (
 	Gold int,
 	primary key (PlayerID,GameID,RoomID),
 	foreign key (PlayerID) references Player_Profile (PlayerID) on delete cascade on update cascade,
-	foreign key (GameID) references Mini_Game (GameID) on delete cascade on update cascade,
-	foreign key (RoomID) references Players_in_Game (RoomID) on delete cascade on update cascade	
+	foreign key (GameID) references Mini_Game (GameID) on delete cascade on update cascade
 );
 
 create table Perks_Available (
-	PerkID int,
+	PerkID int(1),
 	Name text,
 	Description text,
-	Price int, 
+	Price int(4), 
 	primary key (PerkID)
 );
 
 create table Owned_Perk (
 	PlayerID varchar(32),
-	PerkID int,
+	PerkID int(1),
 	Quantity int, 
 	primary key (PlayerID,PerkID),
 	foreign key (PlayerID) references Player_Profile (PlayerID) on delete cascade on update cascade,
 	foreign key (PerkID) references Perks_Available (PerkID) on delete cascade on update cascade
 );
-
 
 insert into Mini_Game values(1,0);
 insert into Mini_Game values(2,0);
@@ -69,6 +67,7 @@ insert into Mini_Game values(2,0);
 
 insert into Perks_Available values(1,'2x Multiplier','Used to multiply both cash and gold obtained from a game!',4);
 insert into Perks_Available values(2,'Head start!','Used to obtain a random headstart between 1 to 10 in Snakes \'n Ladders!',6);
+
 
 delimiter $$
 
@@ -80,11 +79,11 @@ end $$
 create procedure cashLeaderboard()
 begin
 	select @rank:=@rank+1 as rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc;
-end
+end $$
 
-create procedure cashLeaderboard()
+create procedure goldLeaderboard()
 begin
-	select @rank:=@rank+1 as rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc;
+	select @rank:=@rank+1 as rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Gold desc;
 end $$
 
 create procedure snakePlayerHistory(pid varchar(32))
