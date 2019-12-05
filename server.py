@@ -9,8 +9,7 @@ socketio = SocketIO(app)
 
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'Game_server'
-app.config['MYSQL_PASSWORD'] = 'Game_server1234'
+app.config['MYSQL_PASSWORD'] = 'Game_server'     #change this password to your MySQL password for root@localhost 
 app.config['MYSQL_DB'] = 'Game_server'
 
 mysql = MySQL(app)
