@@ -4,7 +4,7 @@ A web app which supports multiplayer gaming.
 
 ### Setting up MySQL 
 ```bash
-sudo apt install mysql-server
+sudo apt install mysql-server libmysqlclient-dev
 sudo mysql_secure_installation
 mysql -u root -p
 #enter your password when prompted
