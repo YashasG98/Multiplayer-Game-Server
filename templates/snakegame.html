@@ -56,6 +56,10 @@
 
     </div>
 
+
+    <div id="turn-warning" class="alert-secondary" style="display: none;">Waiting for other player...</div>
+
+
     <!-- Modal -->
     <div class="modal fade" id="readyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
@@ -157,6 +161,7 @@
 
         if (getUrlVars()["player2"]) {
             $('#rollButton').attr('disabled', 'disabled');
+            $('#turn-warning').show();
         }
 
         $(window).on('load', function () {

@@ -238,13 +238,16 @@ function rollOnce() {
                     redraw();
                     if (player1.state == SNADDER_STATE)
                         redraw();
-                    if (isPlayer2)
+                    if (isPlayer2) {
                         $('#rollButton').removeAttr('disabled');
+                        $('#turn-warning').hide();
+                    }
                     else {
-                        arr = [lastMoveValue, user_email]
+                        arr = [lastMoveValue, user_email];
                         socket_private.emit('moveSender', arr);
                         // console.log('HERE1');
                         $('#rollButton').attr('disabled', 'disabled');
+                        $('#turn-warning').show();
                     }
                     active_player = 2;
                 }, 750);
@@ -263,12 +266,15 @@ function rollOnce() {
                         redraw();
                     if (isPlayer2) {
                         $('#rollButton').attr('disabled', 'disabled');
+                        $('#turn-warning').show();
                         arr = [lastMoveValue, user_email]
                         socket_private.emit('moveSender', arr);
                         // console.log('HERE2');
                     }
-                    else
+                    else {
                         $('#rollButton').removeAttr('disabled');
+                        $('#turn-warning').hide();
+                    }
                     active_player = 1;
                 }, 750);
             }
