@@ -127,6 +127,7 @@ class Connect4 {
                 that.turn = (that.turn === 'red') ? 'black' : 'red';
                 that.onPlayerMove();
                 $(this).trigger('mouseenter');
+                $('#turn-warning').show();
             }
         });
     }
@@ -197,6 +198,9 @@ $(document).ready(function () {
     const connect4 = new Connect4('#connect4')
     var socket = io('http://127.0.0.1:5000/private');
     connect4.player = playerColor;
+    if (playerColor === 'red') {
+        $('#turn-warning').hide();
+    }
 
     socket.emit('user_email', {'player': user, 'game_id': 2});
     socket.emit('redirectionSocket', {'player': user, 'game_id': 2});
@@ -238,6 +242,7 @@ $(document).ready(function () {
             } else {
                 connect4.fillCell(data['row'], data['col'], data['player']);
                 connect4.turn = data['turn'];
+                $('#turn-warning').hide();
             }
 
         }
