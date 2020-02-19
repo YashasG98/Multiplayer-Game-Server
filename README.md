@@ -4,8 +4,15 @@ A web app which supports multiplayer gaming.
 
 ### Setting up MySQL 
 ```bash
+sudo apt update
 sudo apt install mysql-server libmysqlclient-dev
-sudo mysql_secure_installation
+
+#setting your password
+sudo mysql
+mysql > ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_new_password';
+mysql > FLUSH PRIVILEGES;
+mysql > exit
+
 mysql -u root -p
 #enter your password when prompted
 mysql > source db_config.sql 
