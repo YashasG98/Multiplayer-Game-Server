@@ -22,6 +22,8 @@ class Connect4 {
             $cell.data('player', `${p}`);
         };
 
+        this.waiting = null;
+
         this.calculateWinnings = function(){
             if (this.noOfTurns == 21){
                 // Draw
@@ -197,6 +199,8 @@ $(document).ready(function () {
     const connect4 = new Connect4('#connect4')
     var socket = io('http://127.0.0.1:5000/private');
     connect4.player = playerColor;
+    connect4.waiting = this.getElementById('waiting');
+    connect4.waiting.hidden = (playerColor == 'red') ? true : false;
 
     socket.emit('user_email', {'player': user, 'game_id': 2});
     socket.emit('redirectionSocket', {'player': user, 'game_id': 2});
@@ -210,6 +214,8 @@ $(document).ready(function () {
             'game_over': connect4.isGameOver,
             'user': user
         });
+        //we consider our turn over, hide the waiting message
+        connect4.waiting.hidden = false;
     }
     
     socket.on('game_state', data => {
@@ -238,6 +244,9 @@ $(document).ready(function () {
             } else {
                 connect4.fillCell(data['row'], data['col'], data['player']);
                 connect4.turn = data['turn'];
+
+                //it's out turn again, disable the waiting message
+                connect4.waiting.hidden = true;
             }
 
         }
