@@ -207,6 +207,18 @@ function draw() {
     noLoop();
 }
 
+//dosplay or hide the waiting message according to the current active player
+function updateWaitingText(){
+    var waiting = document.getElementById('waiting');
+    if (active_player != playerId){
+        waiting.hidden = true;
+    }
+    else{
+        waiting.hidden = false;
+    }
+}
+
+//called when a player rolls he dice, thus ending their turn
 function rollOnce() {
     document.getElementById('2xPassAlert').hidden = true;
     document.getElementById('headStartPassAlert').hidden = true;
@@ -246,6 +258,7 @@ function rollOnce() {
                         // console.log('HERE1');
                         $('#rollButton').attr('disabled', 'disabled');
                     }
+                    updateWaitingText();
                     active_player = 2;
                 }, 750);
             }
@@ -265,10 +278,10 @@ function rollOnce() {
                         $('#rollButton').attr('disabled', 'disabled');
                         arr = [lastMoveValue, user_email]
                         socket_private.emit('moveSender', arr);
-                        // console.log('HERE2');
                     }
                     else
                         $('#rollButton').removeAttr('disabled');
+                    updateWaitingText();
                     active_player = 1;
                 }, 750);
             }

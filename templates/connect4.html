@@ -30,11 +30,16 @@
     const playerColor = `{{ color }}`;
   </script>
 
+  <!-- waiting message -->
+  <div class="navbar-dark bg-dark" id="waiting">
+      <b class="navbar-brand">Opponent is playing...</b>
+  </div>
+
   <div id="parent">
     <div id="player1Color"></div>
     <div id="playerName">
       {% if color=="red" %}
-      {{ email }}
+      {{ fullName }}
       {% else %}
       {{ paired_email }}
       {% endif %}
@@ -46,7 +51,7 @@
       {% if color=="red" %}
       {{ paired_email }}
       {% else %}
-      {{ email }}
+      {{ fullName }}
       {% endif %}
     </div>
   </div>

@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request,redirect, url_for, make_response
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, send, emit
+from tools import *
 import random
 
 app = Flask(__name__)
@@ -90,8 +91,12 @@ def Login():
         else:
             if(enc_string==stored):
                 logged_in_users.append(email)
+                #get the playerID
+                cur.callproc("fullName", (email,))
+                res = cur.fetchone()
                 resp = make_response(redirect(url_for('Index')))
                 resp.set_cookie('email',email)
+                resp.set_cookie('fullName', res[0])
                 cur.close()
                 return resp
             else:
@@ -117,7 +122,11 @@ def Profile():
         cur.close()
         (user_email,firstName,lastName,cash,gold) = values[0]
         name = firstName+" "+lastName
-        return render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold)
+        resp = make_response(render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold))
+        #reset the fullName cookie if it has been updated
+        if name != request.cookies.get('fullName'):
+            resp.set_cookie('fullName', name)
+        return resp
     else:
         return redirect(url_for('Login'))
 
@@ -182,8 +191,9 @@ def Index():
 @app.route('/miniGames.html')
 def MiniGames():
     email = request.cookies.get('email')
+    fullName = request.cookies.get('fullName')
     if email in logged_in_users:
-        return render_template('miniGames.html', email=email)
+        return render_template('miniGames.html', email=email, fullName=fullName)
     else:
         return redirect(url_for('Login'))
 
@@ -194,7 +204,6 @@ def Waiting():
     game_id = int(request.args.get('game_id'))
     
     if email in logged_in_users:
-    
         cur=mysql.connection.cursor()
         _sql = "select GameID from Players_in_Game where GameID = '{0}'"
         cur.execute(_sql.format(game_id))
@@ -242,19 +251,23 @@ def Waiting():
 def SAL():
     email = request.cookies.get('email')
     if email in logged_in_users:
-        return render_template('snakegame.html', player2=snakePartners[email])
+        #get opponent full name
+        player2 = GetFullName(snakePartners[email])
+        player1 = request.cookies.get("fullName")
+        return render_template('snakegame.html', player1=player1, player2=player2)
     else:
         return redirect(url_for('Login'))
 
 @app.route('/connect4')
 def Connect4():
     email = request.cookies.get('email')
-    paired_email = c4pairs[email]
+    paired_email = GetFullName(c4pairs[email])
+    fullName = request.cookies.get("fullName")
     if email in logged_in_users:
         if email in c4WaitingSid:
-            return render_template('connect4.html', email = email, paired_email=paired_email, color="red")
+            return render_template('connect4.html', fullName=fullName, email=email, paired_email=paired_email, color="red")
         else:
-            return render_template('connect4.html', email = email, paired_email=paired_email, color="black")
+            return render_template('connect4.html', fullName=fullName,email=email, paired_email=paired_email, color="black")
     else:
         return redirect(url_for('Login'))
 
