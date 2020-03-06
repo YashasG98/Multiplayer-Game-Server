@@ -135,11 +135,11 @@ def Leaderboard():
     email = request.cookies.get('email')
     if email in logged_in_users:
         cur = mysql.connect.cursor()
-        _sql = "select @rank:=@rank+1 as rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc"
+        _sql = "select @rank:=@rank+1 as _rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc"
         cur.execute(_sql)
         values = cur.fetchall()
         cash_leaderboard = [list(x) for x in values]
-        _sql = "select @rank:=@rank+1 as rank, firstName, lastName, Gold from Player_Profile p, (select @rank := 0) r order by Gold desc"
+        _sql = "select @rank:=@rank+1 as _rank, firstName, lastName, Gold from Player_Profile p, (select @rank := 0) r order by Gold desc"
         cur.execute(_sql)
         values = cur.fetchall()
         gold_leaderboard = [list(x) for x in values]
@@ -153,11 +153,11 @@ def PlayerHistory():
     email = request.cookies.get('email')
     if email in logged_in_users:
         cur = mysql.connect.cursor()
-        _sql = "select @rank:=@rank+1 as rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
+        _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
         cur.execute(_sql.format(email,GAME_ID_SNAKE))
         values = cur.fetchall()
         snake_history = [list(x) for x in values]
-        _sql = "select @rank:=@rank+1 as rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
+        _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
         cur.execute(_sql.format(email,GAME_ID_CONNECT4))
         values = cur.fetchall()
         connect4_history = [list(x) for x in values]
