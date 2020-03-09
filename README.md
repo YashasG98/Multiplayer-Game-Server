@@ -33,7 +33,7 @@ pip install -r requirements.txt
 Change your password at line 12 of server.py
 
 ```bash
-python server.py
+python3 server.py
 ```
 
 To login and play, use two different browsers, as we use cookies to save user information.
