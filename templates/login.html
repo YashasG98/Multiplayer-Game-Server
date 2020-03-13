@@ -30,6 +30,12 @@
     </div>
   </nav>
 
+  {% if request.args.get("needLogin") %}
+  <div class="alert alert-danger" role="alert">
+      You need to login first
+  </div>
+  {% endif %}
+
   {% if error %}
   <div class="alert alert-danger" role="alert">
       {{error}}

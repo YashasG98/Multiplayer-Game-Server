@@ -33,12 +33,10 @@ c4pairs = {}
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        print("LOGIN REQUIRED")
         if request.cookies.get('email') != None:
-            print("EMAIL FOUND")
             return f(*args, **kwargs)
         else:
-            return redirect(url_for('Login'))
+            return redirect(url_for('Login', needLogin=True))
     return wrap
 
 # App functionality
