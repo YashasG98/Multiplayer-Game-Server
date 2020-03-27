@@ -44,8 +44,6 @@ def login_required(f):
 def Home():
     resp = make_response(render_template('login.html'))
     email = request.args.get('email')
-    resp.set_cookie('email', expires=0)
-    resp.set_cookie('fullName', expires=0)
     if email in logged_in_users:
         logged_in_users.remove(email)
     return resp        
@@ -116,7 +114,17 @@ def Login():
                 error = 'Invalid password'
     return render_template('login.html', error = error)
 
-@app.route('/profile', methods = ['GET','POST'])
+@app.route('/logout', methods = ['GET', 'POST'])
+def Logout():
+    resp = make_response(redirect(url_for('Login')))
+    email = request.args.get('email')
+    resp.set_cookie('email', expires=0)
+    resp.set_cookie('fullName', expires=0)
+    if email in logged_in_users:
+        logged_in_users.remove(email)
+    return resp
+
+@app.route('/profile')
 @login_required
 def Profile():
     error = None
