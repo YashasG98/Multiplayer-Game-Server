@@ -2,6 +2,7 @@ from flask import Flask,render_template,request,redirect, url_for, make_response
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, send, emit
 from tools import *
+from functools import wraps
 import random
 
 app = Flask(__name__)
@@ -27,6 +28,16 @@ snakePartners={}
 c4users = {}
 c4WaitingSid = []
 c4pairs = {}
+
+# login required decorator
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if request.cookies.get('email') != None:
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('Login', needLogin=True))
+    return wrap
 
 # App functionality
 @app.route('/')
@@ -103,173 +114,160 @@ def Login():
                 error = 'Invalid password'
     return render_template('login.html', error = error)
 
-@app.route('/profile', methods = ['GET','POST'])
+@app.route('/logout')
+def Logout():
+    resp = make_response(redirect(url_for('Login')))
+    email = request.args.get('email')
+    resp.set_cookie('email', expires=0)
+    resp.set_cookie('fullName', expires=0)
+    if email in logged_in_users:
+        logged_in_users.remove(email)
+    return resp
+
+@app.route('/profile')
+@login_required
 def Profile():
     error = None
     email = request.cookies.get('email')
-    if email in  logged_in_users:        
-        cur=mysql.connection.cursor()
-        if request.method=='POST':
-            firstName = request.form['firstName']
-            lastName = request.form['lastName']
-            _sql = "update Player_Profile set firstName='{0}', lastName='{1}' where PlayerID = '{2}'"
-            cur.execute(_sql.format(firstName,lastName,email))
-            mysql.connection.commit()
-                
-        _sql = "select * from Player_Profile where PlayerID = '{0}'"
-        cur.execute(_sql.format(email))
-        values = cur.fetchall()
-        cur.close()
-        (user_email,firstName,lastName,cash,gold) = values[0]
-        name = firstName+" "+lastName
-        resp = make_response(render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold))
-        #reset the fullName cookie if it has been updated
-        if name != request.cookies.get('fullName'):
-            resp.set_cookie('fullName', name)
-        return resp
-    else:
-        return redirect(url_for('Login'))
+    cur=mysql.connection.cursor()
+    if request.method=='POST':
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
+        _sql = "update Player_Profile set firstName='{0}', lastName='{1}' where PlayerID = '{2}'"
+        cur.execute(_sql.format(firstName,lastName,email))
+        mysql.connection.commit()
+            
+    _sql = "select * from Player_Profile where PlayerID = '{0}'"
+    cur.execute(_sql.format(email))
+    values = cur.fetchall()
+    cur.close()
+    (user_email,firstName,lastName,cash,gold) = values[0]
+    name = firstName+" "+lastName
+    resp = make_response(render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold))
+    #reset the fullName cookie if it has been updated
+    if name != request.cookies.get('fullName'):
+        resp.set_cookie('fullName', name)
+    return resp
 
 @app.route('/leaderboard')
+@login_required
 def Leaderboard():
-    email = request.cookies.get('email')
-    if email in logged_in_users:
-        cur = mysql.connect.cursor()
-        _sql = "select @rank:=@rank+1 as _rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc"
-        cur.execute(_sql)
-        values = cur.fetchall()
-        cash_leaderboard = [list(x) for x in values]
-        _sql = "select @rank:=@rank+1 as _rank, firstName, lastName, Gold from Player_Profile p, (select @rank := 0) r order by Gold desc"
-        cur.execute(_sql)
-        values = cur.fetchall()
-        gold_leaderboard = [list(x) for x in values]
-        cur.close()
-        return render_template('leaderboard.html',cash_leaderboard=cash_leaderboard, gold_leaderboard=gold_leaderboard)
-    else:
-        return redirect(url_for('Login'))
+    cur = mysql.connect.cursor()
+    _sql = "select @rank:=@rank+1 as _rank, firstName, lastName, Cash from Player_Profile p, (select @rank := 0) r order by Cash desc"
+    cur.execute(_sql)
+    values = cur.fetchall()
+    cash_leaderboard = [list(x) for x in values]
+    _sql = "select @rank:=@rank+1 as _rank, firstName, lastName, Gold from Player_Profile p, (select @rank := 0) r order by Gold desc"
+    cur.execute(_sql)
+    values = cur.fetchall()
+    gold_leaderboard = [list(x) for x in values]
+    cur.close()
+    return render_template('leaderboard.html',cash_leaderboard=cash_leaderboard, gold_leaderboard=gold_leaderboard)
 
 @app.route('/history')
+@login_required
 def PlayerHistory():
     email = request.cookies.get('email')
-    if email in logged_in_users:
-        cur = mysql.connect.cursor()
-        _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
-        cur.execute(_sql.format(email,GAME_ID_SNAKE))
-        values = cur.fetchall()
-        snake_history = [list(x) for x in values]
-        _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
-        cur.execute(_sql.format(email,GAME_ID_CONNECT4))
-        values = cur.fetchall()
-        connect4_history = [list(x) for x in values]
-        cur.close()
-        return render_template('playerHistory.html',snake_history=snake_history, connect4_history=connect4_history)
-    else:
-        return redirect(url_for('Login'))
+    cur = mysql.connect.cursor()
+    _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
+    cur.execute(_sql.format(email,GAME_ID_SNAKE))
+    values = cur.fetchall()
+    snake_history = [list(x) for x in values]
+    _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
+    cur.execute(_sql.format(email,GAME_ID_CONNECT4))
+    values = cur.fetchall()
+    connect4_history = [list(x) for x in values]
+    cur.close()
+    return render_template('playerHistory.html',snake_history=snake_history, connect4_history=connect4_history)
 
 @app.route('/shop')
+@login_required
 def Shop():
-    email = request.cookies.get('email')
-    if email in logged_in_users:
-        cur = mysql.connect.cursor()
-        _sql = "select * from Perks_Available"
-        cur.execute(_sql)
-        values = cur.fetchall()
-        perks = [list(x) for x in values]
-        cur.close()
-        return render_template('store.html', perks = perks)
-    else:
-        return redirect(url_for('Login'))
+    cur = mysql.connect.cursor()
+    _sql = "select * from Perks_Available"
+    cur.execute(_sql)
+    values = cur.fetchall()
+    perks = [list(x) for x in values]
+    cur.close()
+    return render_template('store.html', perks = perks)
 
 @app.route('/index.html')
+@login_required
 def Index():
     email = request.cookies.get('email')
-    if email in logged_in_users:
-        return render_template('index.html', email=email)
-    else:
-        return redirect(url_for('Login'))
+    return render_template('index.html', email=email)
 
 @app.route('/miniGames.html')
+@login_required
 def MiniGames():
     email = request.cookies.get('email')
     fullName = request.cookies.get('fullName')
-    if email in logged_in_users:
-        return render_template('miniGames.html', email=email, fullName=fullName)
-    else:
-        return redirect(url_for('Login'))
+    return render_template('miniGames.html', email=email, fullName=fullName)
 
 @app.route('/waitingPage.html')
+@login_required
 def Waiting():
 
     email = request.cookies.get('email')
     game_id = int(request.args.get('game_id'))
     
-    if email in logged_in_users:
-        cur=mysql.connection.cursor()
-        _sql = "select GameID from Players_in_Game where GameID = '{0}'"
+    cur=mysql.connection.cursor()
+    _sql = "select GameID from Players_in_Game where GameID = '{0}'"
+    cur.execute(_sql.format(game_id))
+    stored=cur.fetchall()
+
+    if(len(stored)%2==0):
+
+        _sql = "select No_of_rooms from Mini_Game where GameID = '{0}'"
         cur.execute(_sql.format(game_id))
         stored=cur.fetchall()
-    
-        if(len(stored)%2==0):
-    
-            _sql = "select No_of_rooms from Mini_Game where GameID = '{0}'"
-            cur.execute(_sql.format(game_id))
-            stored=cur.fetchall()
-            curr_rooms = stored[0][0]
-            curr_rooms = curr_rooms + 1
-            _sql = "update Mini_Game set No_of_rooms = '{0}' where GameID = '{1}'"
-            cur.execute(_sql.format(curr_rooms,game_id))
-            _sql = "insert into Players_in_Game values('{0}','{1}','{2}')"
-            cur.execute(_sql.format(email, game_id, curr_rooms))
-            mysql.connection.commit()
-            return render_template('waitingPage.html', email=email, game_id=game_id)
-
-        else:
-            
-            _sql = "select No_of_rooms from Mini_Game where GameID = '{0}'"
-            cur.execute(_sql.format(game_id))
-            stored=cur.fetchall()
-            curr_rooms = stored[0][0]
-            _sql = "insert into Players_in_Game values('{0}','{1}','{2}')"
-            cur.execute(_sql.format(email, game_id, curr_rooms))
-            mysql.connection.commit()
-
-            if game_id == GAME_ID_SNAKE:
-                snakePartners[email]=snakeWaitingSid[0]
-                snakePartners[snakeWaitingSid[0]]=email
-                return redirect(url_for('SAL'))
-
-            elif game_id == GAME_ID_CONNECT4:
-                c4pairs[email] = c4WaitingSid[0]
-                c4pairs[c4WaitingSid[0]] = email 
-                return redirect(url_for('Connect4'))
+        curr_rooms = stored[0][0]
+        curr_rooms = curr_rooms + 1
+        _sql = "update Mini_Game set No_of_rooms = '{0}' where GameID = '{1}'"
+        cur.execute(_sql.format(curr_rooms,game_id))
+        _sql = "insert into Players_in_Game values('{0}','{1}','{2}')"
+        cur.execute(_sql.format(email, game_id, curr_rooms))
+        mysql.connection.commit()
+        return render_template('waitingPage.html', email=email, game_id=game_id)
 
     else:
-        return redirect(url_for('Login'))
+        
+        _sql = "select No_of_rooms from Mini_Game where GameID = '{0}'"
+        cur.execute(_sql.format(game_id))
+        stored=cur.fetchall()
+        curr_rooms = stored[0][0]
+        _sql = "insert into Players_in_Game values('{0}','{1}','{2}')"
+        cur.execute(_sql.format(email, game_id, curr_rooms))
+        mysql.connection.commit()
 
+        if game_id == GAME_ID_SNAKE:
+            snakePartners[email]=snakeWaitingSid[0]
+            snakePartners[snakeWaitingSid[0]]=email
+            return redirect(url_for('SAL'))
+
+        elif game_id == GAME_ID_CONNECT4:
+            c4pairs[email] = c4WaitingSid[0]
+            c4pairs[c4WaitingSid[0]] = email 
+            return redirect(url_for('Connect4'))
 
 @app.route('/snakegame.html')
+@login_required
 def SAL():
     email = request.cookies.get('email')
-    if email in logged_in_users:
-        #get opponent full name
-        player2 = GetFullName(snakePartners[email])
-        player1 = request.cookies.get("fullName")
-        return render_template('snakegame.html', player1=player1, player2=player2)
-    else:
-        return redirect(url_for('Login'))
+    player2 = GetFullName(snakePartners[email])
+    player1 = request.cookies.get("fullName")
+    return render_template('snakegame.html', player1=player1, player2=player2)
 
 @app.route('/connect4')
+@login_required
 def Connect4():
     email = request.cookies.get('email')
     paired_email = GetFullName(c4pairs[email])
     fullName = request.cookies.get("fullName")
-    if email in logged_in_users:
-        if email in c4WaitingSid:
-            return render_template('connect4.html', fullName=fullName, email=email, paired_email=paired_email, color="red")
-        else:
-            return render_template('connect4.html', fullName=fullName,email=email, paired_email=paired_email, color="black")
+    if email in c4WaitingSid:
+        return render_template('connect4.html', fullName=fullName, email=email, paired_email=paired_email, color="red")
     else:
-        return redirect(url_for('Login'))
+        return render_template('connect4.html', fullName=fullName,email=email, paired_email=paired_email, color="black")
 
 # Socket IO functionality
 @socketio.on('waiting_id', namespace='/private')

@@ -22,13 +22,19 @@
           <a class="nav-link" href="register.html"><b>Register</b></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="index.html"><b>Login</b></a>
+          <a class="nav-link" href="/login.html"><b>Login</b></a>
         </li>
       </ul>
       <span class="navbar-text">
       </span>
     </div>
   </nav>
+
+  {% if request.args.get("needLogin") %}
+  <div class="alert alert-danger" role="alert">
+      You need to login first
+  </div>
+  {% endif %}
 
   {% if error %}
   <div class="alert alert-danger" role="alert">
