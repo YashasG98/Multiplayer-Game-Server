@@ -12,34 +12,7 @@
 
 <body>
     {% include "sessionNavigationBar.html" %}
-    <!--<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Multiplayer Game Server</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
-            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('MiniGames')}}"><b>Play!</b></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('Profile')}}"><b>Profile</b></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('Shop')}}"><b>Secret Shop</b></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('Leaderboard')}}"><b>Leaderboard</b></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{url_for('Home', email=email)}}"><b>Logout</b></a>
-                </li>
-            </ul>
-            <span class="navbar-text">
-            </span>
-        </div>
-    </nav>-->
+
     <div style='height: 100vh;' class="jumbotron">
         <h1 class="display-4">Hello, gamer!</h1>
         <p class="lead">Welcome to the abode of multiplayer gaming!</p>
@@ -58,7 +31,7 @@
             onclick="window.location.href=`{{ url_for('Leaderboard') }}`">Leaderboard</button>
         <button style='margin-bottom: 5vh;height: 7vh;width: 50%;margin-left: auto;margin-right: auto;' type="button"
             class="btn btn-danger btn-lg btn-block"
-            onclick="window.location.href=`{{url_for('Home', email=email)}}`">Exit</button>
+            onclick="window.location.href=`{{url_for('Logout')}}`">Log out</button>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
