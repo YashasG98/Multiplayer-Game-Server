@@ -114,7 +114,7 @@ def Login():
                 error = 'Invalid password'
     return render_template('login.html', error = error)
 
-@app.route('/logout', methods = ['GET', 'POST'])
+@app.route('/logout')
 def Logout():
     resp = make_response(redirect(url_for('Login')))
     email = request.args.get('email')
