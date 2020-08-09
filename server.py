@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect, url_for, make_response
+from flask import Flask,render_template,request,redirect, url_for, make_response,session
 from flask_mysqldb import MySQL
 from flask_socketio import SocketIO, send, emit
 from tools import *
@@ -33,7 +33,7 @@ c4pairs = {}
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
-        if request.cookies.get('email') != None:
+        if 'email' in session:
             return f(*args, **kwargs)
         else:
             return redirect(url_for('Login', needLogin=True))
@@ -106,8 +106,8 @@ def Login():
                 cur.callproc("fullName", (email,))
                 res = cur.fetchone()
                 resp = make_response(redirect(url_for('Index')))
-                resp.set_cookie('email',email)
-                resp.set_cookie('fullName', res[0])
+                session['email']=email
+                session['fullName']=res[0]
                 cur.close()
                 return resp
             else:
@@ -118,8 +118,8 @@ def Login():
 def Logout():
     resp = make_response(redirect(url_for('Login')))
     email = request.args.get('email')
-    resp.set_cookie('email', expires=0)
-    resp.set_cookie('fullName', expires=0)
+    session.pop('email',None)
+    session.pop('fullName', None)
     if email in logged_in_users:
         logged_in_users.remove(email)
     return resp
@@ -128,7 +128,7 @@ def Logout():
 @login_required
 def Profile():
     error = None
-    email = request.cookies.get('email')
+    email = session.get('email')
     cur=mysql.connection.cursor()
     if request.method=='POST':
         firstName = request.form['firstName']
@@ -144,9 +144,9 @@ def Profile():
     (user_email,firstName,lastName,cash,gold) = values[0]
     name = firstName+" "+lastName
     resp = make_response(render_template('profile.html', email=user_email, name=name, cash=cash, gold=gold))
-    #reset the fullName cookie if it has been updated
-    if name != request.cookies.get('fullName'):
-        resp.set_cookie('fullName', name)
+    #reset the fullName session if it has been updated
+    if name != session.get('fullName'):
+        session['fullName']= name
     return resp
 
 @app.route('/leaderboard')
@@ -167,7 +167,7 @@ def Leaderboard():
 @app.route('/history')
 @login_required
 def PlayerHistory():
-    email = request.cookies.get('email')
+    email = session.get('email')
     cur = mysql.connect.cursor()
     _sql = "select @rank:=@rank+1 as _rank, Cash, Gold from Player_History p, (select @rank := 0) r where PlayerID='{0}' and GameID={1} order by Cash desc"
     cur.execute(_sql.format(email,GAME_ID_SNAKE))
@@ -194,21 +194,21 @@ def Shop():
 @app.route('/index.html')
 @login_required
 def Index():
-    email = request.cookies.get('email')
+    email = session.get('email')
     return render_template('index.html', email=email)
 
 @app.route('/miniGames.html')
 @login_required
 def MiniGames():
-    email = request.cookies.get('email')
-    fullName = request.cookies.get('fullName')
+    email = session.get('email')
+    fullName = session.get('fullName')
     return render_template('miniGames.html', email=email, fullName=fullName)
 
 @app.route('/waitingPage.html')
 @login_required
 def Waiting():
 
-    email = request.cookies.get('email')
+    email = session.get('email')
     game_id = int(request.args.get('game_id'))
     
     cur=mysql.connection.cursor()
@@ -253,17 +253,17 @@ def Waiting():
 @app.route('/snakegame.html')
 @login_required
 def SAL():
-    email = request.cookies.get('email')
+    email = session.get('email')
     player2 = GetFullName(snakePartners[email])
-    player1 = request.cookies.get("fullName")
+    player1 = session.get("fullName")
     return render_template('snakegame.html', player1=player1, player2=player2)
 
 @app.route('/connect4')
 @login_required
 def Connect4():
-    email = request.cookies.get('email')
+    email = session.get('email')
     paired_email = GetFullName(c4pairs[email])
-    fullName = request.cookies.get("fullName")
+    fullName = session.get("fullName")
     if email in c4WaitingSid:
         return render_template('connect4.html', fullName=fullName, email=email, paired_email=paired_email, color="red")
     else:
@@ -298,7 +298,7 @@ def leave_waiting(arr):
 
 @socketio.on('moveSender', namespace='/private')
 def send_move(arr):
-    email = request.cookies.get('email')
+    email = session.get('email')
     if(arr[0] == 'check2x'):
         cur=mysql.connection.cursor()
         arr.clear()
@@ -344,7 +344,7 @@ def send_move(arr):
 @socketio.on('board', namespace='/private')
 def running_game(data):
     if data == "twoXMultiplier":
-        email = request.cookies.get('email')
+        email = session.get('email')
         cur=mysql.connection.cursor()
         _sql = "select Quantity from Owned_Perk where PlayerID = '{0}' and PerkID = '{1}'"
         cur.execute(_sql.format(email,1))
@@ -365,7 +365,7 @@ def running_game(data):
 
 @socketio.on('update_database', namespace='/private')
 def update_db(arr):
-    email = request.cookies.get('email')
+    email = session.get('email')
     cur=mysql.connection.cursor()
     _sql = "select GameID,RoomID from Players_in_Game where PlayerID = '{0}'"
     cur.execute(_sql.format(email))
@@ -390,7 +390,7 @@ def update_db(arr):
 
 @socketio.on('buyPerk', namespace='/private')
 def buyPerk(arr):
-    email = request.cookies.get('email')
+    email = session.get('email')
     cur=mysql.connection.cursor()
     if(arr[0]=='getAvailableGold'):
         _sql = "select Gold from Player_Profile where PlayerID = '{0}'"
