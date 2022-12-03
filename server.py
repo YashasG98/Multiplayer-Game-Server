@@ -58,13 +58,13 @@ def Register():
         lastName = request.form['lastName']
 
         #Valid input check
-        if(len(email) is 0):
+        if(len(email) == 0):
             error = 'Email cannot be empty'
             return render_template('register.html', error = error)
         if (len(password) < 8):
             error = 'Password must be 8 characters long'
             return render_template('register.html', error = error)
-        if (len(firstName) is 0):
+        if (len(firstName) == 0):
             error = 'First Name cannot be empty'
             return render_template('register.html', error = error)
         
@@ -73,7 +73,7 @@ def Register():
         _sql = "select * from Login_Credentials where PlayerID = '{0}'"
         cur.execute(_sql.format(email))
         data=cur.fetchall()
-        if(len(data) is 0):
+        if(len(data) == 0):
             error = None
             cur.execute("INSERT INTO Player_Profile(PlayerID,firstName,lastName) VALUES(%s,%s,%s)",(email,firstName,lastName))
             cur.execute("INSERT INTO Login_Credentials VALUES(%s,MD5(%s))",(email,password))
@@ -97,7 +97,7 @@ def Login():
         _sql = "select password from Login_Credentials where PlayerID = '{0}'"
         cur.execute(_sql.format(email))
         stored=cur.fetchall()
-        if(len(stored) is 0):
+        if(len(stored) == 0):
             error = 'Email not found!'
         else:
             if(enc_string==stored):
@@ -407,7 +407,7 @@ def buyPerk(arr):
         cur.execute(_sql.format(email,arr[1]))
         stored=cur.fetchall()
         # print(stored)
-        if(len(stored) is 0):
+        if(len(stored) == 0):
             quantity = 1
             _sql = "insert into Owned_Perk values('{0}',{1},{2})"
             cur.execute(_sql.format(email,arr[1],quantity))
