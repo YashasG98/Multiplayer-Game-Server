@@ -1,5 +1,6 @@
 __pycache__
 flaskenv/
+venv/
 config.pyc
 server.pyc
 tools.pyc
